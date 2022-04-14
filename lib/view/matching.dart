@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,12 +21,16 @@ class Matching extends StatefulWidget {
 class _MatchingState extends State<Matching> {
   List leftPuzzleList = [];
   List rightPuzzleList = [];
+  AudioCache audioCache = AudioCache();
 
   @override
   void initState() {
     context.read<MatchingViewModel>().resetAnswerList();
     initPuzzleRandom();
     //createKeys();
+    if (Platform.isIOS) {
+      audioCache.fixedPlayer?.notificationService.startHeadlessService();
+    }
     super.initState();
   }
 

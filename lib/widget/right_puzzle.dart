@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:matching/view_model/matching_view_model.dart';
@@ -18,6 +19,8 @@ class _RightPuzzleState extends State<RightPuzzle>
   late String value;
   late double width;
   late AnimationController _controller;
+
+  AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
 
   @override
   void initState() {
@@ -44,14 +47,14 @@ class _RightPuzzleState extends State<RightPuzzle>
           if (data == value) return true;
           return false;
         },
-        onAccept: (data) {
+        onAccept: (data) async {
           Provider.of<MatchingViewModel>(context, listen: false)
               .addAnswerList(data.toString());
+          await advancedPlayer.play(
+              'https://ssl.gstatic.com/dictionary/static/sounds/oxford/$data--_gb_1.mp3',
+              volume: 3.0);
           _controller.forward().then((value) {
             context.read<MatchingViewModel>().completeMatching();
-/*            if (context.read<MatchingViewModel>().getList.length == 4) {
-              print('complete');
-            }*/
           });
         },
       ),

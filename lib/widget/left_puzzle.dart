@@ -62,7 +62,7 @@ class LeftPuzzleState extends State<LeftPuzzle>
                           color: Colors.white),
                       child: right
                           ? Lottie.network(
-                              'https://assets8.lottiefiles.com/packages/lf20_Rn6lNZ.json',
+                              'https://assets6.lottiefiles.com/packages/lf20_oft66j9r.json',
                               controller: _controller, onLoaded: (v) {
                               _controller.forward();
                             })
