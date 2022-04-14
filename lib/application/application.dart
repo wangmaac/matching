@@ -8,6 +8,7 @@ import '../view/home.dart';
 import '../view/login.dart';
 import '../view/matching.dart';
 import '../view/menu.dart';
+import '../view_model/matching_view_model.dart';
 
 class Application extends StatelessWidget {
   const Application({Key? key}) : super(key: key);
@@ -22,7 +23,10 @@ class Application extends StatelessWidget {
     ]);
 
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ProfileViewModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+        ChangeNotifierProvider(create: (_) => MatchingViewModel()),
+      ],
       child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(

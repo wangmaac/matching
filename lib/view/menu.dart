@@ -15,7 +15,7 @@ class Menu extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 100,
+              height: 70,
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.centerLeft,
@@ -46,21 +46,20 @@ class Menu extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         GoRouter.of(context).push('/matching');
-                        //GoRouter.of(context).go('/matching');
                       },
                       child: Container(
-                        width: 300,
-                        height: 300,
+                        width: MediaQuery.of(context).size.height / 4,
+                        height: MediaQuery.of(context).size.height / 4,
                         decoration: BoxDecoration(
                             image: const DecorationImage(
                                 image:
                                     AssetImage('lib/images/puzzle_button.png')),
                             boxShadow: const [
                               BoxShadow(
-                                  spreadRadius: 6,
-                                  blurRadius: 16,
+                                  offset: Offset(5, 5),
                                   color: Colors.black38,
-                                  offset: Offset(16, 16))
+                                  spreadRadius: 1,
+                                  blurRadius: 10)
                             ],
                             borderRadius: BorderRadius.circular(18)),
                       ),

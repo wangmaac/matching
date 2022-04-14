@@ -1,103 +1,106 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+import 'package:matching/view_model/matching_view_model.dart';
+import 'package:provider/provider.dart';
 
-class Matching extends StatelessWidget {
+import '../widget/left_puzzle.dart';
+import '../widget/right_puzzle.dart';
+
+class Matching extends StatefulWidget {
   const Matching({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    List leftPuzzleList = ['angry', 'sad', 'happy', 'scared'];
-    List rightPuzzleList = ['angry', 'sad', 'happy', 'scared'];
+  State<Matching> createState() => _MatchingState();
+}
+
+class _MatchingState extends State<Matching> {
+  List leftPuzzleList = [];
+  List rightPuzzleList = [];
+
+  @override
+  void initState() {
+    context.read<MatchingViewModel>().resetAnswerList();
+    initPuzzleRandom();
+    //createKeys();
+    super.initState();
+  }
+
+  void initPuzzleRandom() {
+    leftPuzzleList = ['angry', 'sad', 'happy', 'scared'];
+    rightPuzzleList.addAll(leftPuzzleList);
     leftPuzzleList.shuffle();
     rightPuzzleList.shuffle();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double buttonWidth = MediaQuery.of(context).size.width / 6;
     return Scaffold(
         body: SafeArea(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Stack(
         children: [
-          Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children:
-                  leftPuzzleList.map((e) => leftPuzzle(e.toString())).toList()),
-          const SizedBox(
-            width: 100,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: leftPuzzleList
+                      .asMap()
+                      .map((index, e) => MapEntry(
+                          index,
+                          LeftPuzzle(
+                            index: index,
+                            status: e.toString(),
+                            width: buttonWidth,
+                          )))
+                      .values
+                      .toList()),
+              Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: rightPuzzleList
+                      .asMap()
+                      .map((index, e) => MapEntry(
+                          index,
+                          RightPuzzle(
+                            value: e.toString(),
+                            width: buttonWidth,
+                          )))
+                      .values
+                      .toList()),
+            ],
           ),
-          Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: rightPuzzleList
-                  .map((e) => rightPuzzle(e.toString()))
-                  .toList()),
+          Consumer<MatchingViewModel>(builder: (_, vm, __) {
+            return Visibility(
+              visible: vm.complete,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: Lottie.network(
+                          'https://assets9.lottiefiles.com/packages/lf20_l4xxtfd3.json'),
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: () => GoRouter.of(context).pop(),
+                      child: const Text('back'))
+                ],
+              ),
+            );
+          })
         ],
       ),
-    ));
-  }
-
-  Widget leftPuzzle(String status) {
-    return Expanded(
-      child: Draggable(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  border: Border.all(width: 1, color: Colors.grey),
-                  color: Colors.white),
-              child: Image.asset('lib/images/matching/$status.png')),
-        ),
-        feedback: Container(
-            width: 200,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.grey),
-                color: Colors.white),
-            child: AspectRatio(
-                aspectRatio: 10 / 10,
-                child: Image.asset('lib/images/matching/$status.png'))),
-        childWhenDragging: Center(
-            child: Text(
-          status,
-          style: const TextStyle(color: Colors.grey),
-        )),
-        data: status,
-      ),
-    );
-  }
-
-  Widget rightPuzzle(String status) {
-    return Expanded(
-        child: DragTarget(
-      onWillAccept: (data) {
-        if (status == data) {
-          return true;
-        }
-        return false;
-      },
-      onAccept: (data) {
-        print(data.toString());
-      },
-      builder: (context, list, data) {
-        return Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Container(
-              width: 180,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(width: 1, color: Colors.grey),
-                  color: Colors.white),
-              child: Center(child: LayoutBuilder(
-                builder: (context, constraint) {
-                  return Text(
-                    status,
-                    style: TextStyle(
-                        fontSize: constraint.maxWidth * 0.2,
-                        fontWeight: FontWeight.bold),
-                  );
-                },
-              ))),
-        );
-      },
     ));
   }
 }
