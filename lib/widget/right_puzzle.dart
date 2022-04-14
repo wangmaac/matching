@@ -52,7 +52,7 @@ class _RightPuzzleState extends State<RightPuzzle>
               .addAnswerList(data.toString());
           await advancedPlayer.play(
               'https://ssl.gstatic.com/dictionary/static/sounds/oxford/$data--_gb_1.mp3',
-              volume: 3.0);
+              volume: 10.0);
           _controller.forward().then((value) {
             context.read<MatchingViewModel>().completeMatching();
           });
