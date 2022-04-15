@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:matching/view/jigsaw.dart';
 import 'package:matching/view_model/profile_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,7 @@ class Application extends StatelessWidget {
       GoRoute(path: '/login', builder: (_, state) => const Login()),
       GoRoute(path: '/menu', builder: (_, state) => const Menu()),
       GoRoute(path: '/matching', builder: (_, state) => const Matching()),
+      GoRoute(path: '/jigsaw', builder: (_, state) => const Jigsaw()),
     ]);
 
     return MultiProvider(

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:matching/model/menu_button.dart';
 import 'package:matching/view_model/profile_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +11,13 @@ class Menu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<MenuButtonModel> menuButtonList = [
+      MenuButtonModel(
+          navUrl: '/matching', imageUrl: 'lib/images/puzzle_button.png'),
+      MenuButtonModel(
+          navUrl: '/jigsaw', imageUrl: 'lib/images/jigsaw_button.png'),
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -37,39 +45,42 @@ class Menu extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            ), //TITLE BAR
             Expanded(
               child: Center(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        GoRouter.of(context).push('/matching');
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.height / 4,
-                        height: MediaQuery.of(context).size.height / 4,
-                        decoration: BoxDecoration(
-                            image: const DecorationImage(
-                                image:
-                                    AssetImage('lib/images/puzzle_button.png')),
-                            boxShadow: const [
-                              BoxShadow(
-                                  offset: Offset(5, 5),
-                                  color: Colors.black38,
-                                  spreadRadius: 1,
-                                  blurRadius: 10)
-                            ],
-                            borderRadius: BorderRadius.circular(18)),
-                      ),
-                    ),
-                  ],
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: menuButtonList
+                      .map((model) =>
+                          menuButton(context, model.navUrl, model.imageUrl))
+                      .toList(),
                 ),
               ),
-            )
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget menuButton(BuildContext context, String navURL, String imageURL) {
+    return GestureDetector(
+      onTap: () {
+        GoRouter.of(context).push(navURL);
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.height / 4,
+        height: MediaQuery.of(context).size.height / 4,
+        decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage(imageURL)),
+            boxShadow: const [
+              BoxShadow(
+                  offset: Offset(5, 5),
+                  color: Colors.black38,
+                  spreadRadius: 1,
+                  blurRadius: 10)
+            ],
+            borderRadius: BorderRadius.circular(18)),
       ),
     );
   }
