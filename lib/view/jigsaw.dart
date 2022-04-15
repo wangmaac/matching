@@ -44,11 +44,14 @@ class _JigsawState extends State<Jigsaw> {
   final int pieceCount = 9;
   final double horizontalGridPadding = 50;
 
+  late List<int> orderStack;
+
   List<Offset> leftRandomPosition = [];
 
   @override
   void initState() {
     leftSize = Size.zero;
+    orderStack = List.generate(pieceCount, (index) => index);
     initKeyListBuild(pieceCount);
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       initOffsetOfKeyListBuild();
@@ -72,7 +75,7 @@ class _JigsawState extends State<Jigsaw> {
               flex: 1,
               child: Stack(
                 children: initComplete
-                    ? List.generate(pieceCount, (index) => movingPiece(index))
+                    ? orderStack.map((e) => movingPiece(e)).toList()
                     : [],
               )),
           Expanded(
@@ -203,7 +206,7 @@ class _JigsawState extends State<Jigsaw> {
     });
   }
 
-  movingPiece(int index) {
+  Widget movingPiece(int index) {
     return Positioned(
       width: leftPieceSize.toDouble(),
       height: leftPieceSize.toDouble(),
@@ -221,6 +224,7 @@ class _JigsawState extends State<Jigsaw> {
             fit: BoxFit.cover,
           ),
         ),
+        childWhenDragging: Container(),
         onDragEnd: (detail) {
           double _dx = 0.0;
           double _dy = 0.0;
@@ -243,8 +247,13 @@ class _JigsawState extends State<Jigsaw> {
             _dy = detail.offset.dy;
           }
 
+          List<int> tmp = [...orderStack];
+          tmp.remove(index);
+          tmp.add(index);
+
           setState(() {
             leftRandomPosition[index] = Offset(_dx, _dy);
+            orderStack = tmp;
           });
         },
         child: Container(
