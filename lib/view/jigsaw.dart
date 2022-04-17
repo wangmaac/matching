@@ -1,7 +1,12 @@
 import 'dart:math';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
+
+import '../view_model/jigsaw_view_model.dart';
+import '../widget/finish.dart';
 
 class Jigsaw extends StatefulWidget {
   const Jigsaw({Key? key}) : super(key: key);
@@ -39,6 +44,7 @@ class _JigsawState extends State<Jigsaw> {
   List<Offset> stackImageAddPositionList = [];
 
   bool initComplete = false;
+
   late int leftPieceSize;
 
   final int pieceCount = 9;
@@ -48,9 +54,24 @@ class _JigsawState extends State<Jigsaw> {
 
   List<Offset> leftRandomPosition = [];
 
+  late List<bool> answerList;
+
+  final AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+
+  String getDeviceType() {
+    final MediaQueryData data =
+        MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    return data.size.shortestSide < 600 ? 'mobile' : 'pad';
+  }
+
+  late String deviceKind;
+
   @override
   void initState() {
+    deviceKind = getDeviceType();
     leftSize = Size.zero;
+    Provider.of<JigsawViewModel>(context, listen: false).initViewModel();
+    answerList = List.filled(pieceCount, false);
     orderStack = List.generate(pieceCount, (index) => index);
     initKeyListBuild(pieceCount);
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -67,76 +88,117 @@ class _JigsawState extends State<Jigsaw> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          Expanded(
-              key: leftKey,
-              flex: 1,
-              child: Stack(
-                children: initComplete
-                    ? orderStack.map((e) => movingPiece(e)).toList()
-                    : [],
-              )),
-          Expanded(
-              flex: 2,
-              child: Stack(
-                children: [
-                  Center(
-                    child: GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: horizontalGridPadding),
-                        children: keyList
-                            .asMap()
-                            .map((index, value) => MapEntry(
-                                index,
-                                Container(
-                                  key: keyList[index],
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.grey.shade500,
-                                  )),
-                                )))
-                            .values
-                            .toList()),
-                  ),
-                  Stack(
-                    children: stackImageShapeList
-                        .asMap()
-                        .map((index, value) => MapEntry(
-                            index,
-                            initComplete
-                                ? Positioned(
-                                    top: offsetOfKeyList[index].dy +
-                                        stackImageAddPositionList[index].dy,
-                                    left: offsetOfKeyList[index].dx -
-                                        offsetOfKeyList.first.dx +
-                                        horizontalGridPadding +
-                                        stackImageAddPositionList[index].dx,
-                                    child: Container(
-                                      width: stackImageCalSizeList[index].width,
-                                      height:
-                                          stackImageCalSizeList[index].height,
-                                      child: Image.asset(
-                                          'lib/images/jigsaw/p${index + 1}.png'),
-                                      decoration: const BoxDecoration(
-/*                                        border: Border.all(
-                                            width: 1, color: Colors.black),*/
-                                        color: Colors.transparent,
-                                      ),
-                                    ))
-                                : const SizedBox()))
-                        .values
-                        .toList(),
-                  )
-                ],
-              ))
-        ],
-      ),
+    return Stack(
+      children: [
+        Scaffold(
+          body: Row(
+            children: [
+              //todo : left expanded
+              Expanded(
+                  key: leftKey,
+                  flex: 1,
+                  child: Stack(
+                    children: initComplete
+                        ? orderStack.map((e) => movingPiece(e)).toList()
+                        : [],
+                  )),
+              //todo : right expanded
+              Expanded(
+                  flex: deviceKind == 'pad' ? 2 : 1,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: GridView.count(
+                            crossAxisCount: 3,
+                            childAspectRatio: 1,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: horizontalGridPadding),
+                            children: keyList
+                                .asMap()
+                                .map((index, value) => MapEntry(
+                                    index,
+                                    DragTarget(
+                                      builder: (context, okList, rejectList) {
+                                        return Container(
+                                          key: keyList[index],
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                            width: 1,
+                                            color: Colors.grey.shade500,
+                                          )),
+                                        );
+                                      },
+                                      onWillAccept: (data) {
+                                        if (index == data) {
+                                          return true;
+                                        }
+                                        return false;
+                                      },
+                                      onAccept: (int data) {
+                                        advancedPlayer.play(
+                                            'https://ssl.gstatic.com/dictionary/static/sounds/oxford/wow--_gb_1.mp3',
+                                            volume: 5.0);
+                                        setState(() {
+                                          answerList[data] = true;
+                                          if (!answerList.contains(false)) {
+                                            Provider.of<JigsawViewModel>(
+                                                    context,
+                                                    listen: false)
+                                                .setComplete();
+                                          }
+                                        });
+                                      },
+                                    )))
+                                .values
+                                .toList()),
+                      ),
+                      IgnorePointer(
+                        ignoring: true,
+                        child: Stack(
+                          children: answerList
+                              .asMap()
+                              .map((index, value) => MapEntry(
+                                  index,
+                                  initComplete
+                                      ? Positioned(
+                                          top: offsetOfKeyList[index].dy +
+                                              stackImageAddPositionList[index]
+                                                  .dy,
+                                          left: offsetOfKeyList[index].dx -
+                                              offsetOfKeyList.first.dx +
+                                              horizontalGridPadding +
+                                              stackImageAddPositionList[index]
+                                                  .dx,
+                                          child: Container(
+                                            width: stackImageCalSizeList[index]
+                                                .width,
+                                            height: stackImageCalSizeList[index]
+                                                .height,
+                                            child: Visibility(
+                                              visible: value,
+                                              child: Image.asset(
+                                                  'lib/images/jigsaw/p${index + 1}.png'),
+                                            ),
+                                            decoration: const BoxDecoration(
+                                              color: Colors.transparent,
+                                            ),
+                                          ))
+                                      : const SizedBox()))
+                              .values
+                              .toList(),
+                        ),
+                      )
+                    ],
+                  ))
+            ],
+          ),
+        ),
+        Consumer<JigsawViewModel>(builder: (_, vm, __) {
+          return FinishWidget(vm: vm);
+        })
+      ],
     );
   }
 
@@ -212,57 +274,62 @@ class _JigsawState extends State<Jigsaw> {
       height: leftPieceSize.toDouble(),
       top: leftRandomPosition[index].dy,
       left: leftRandomPosition[index].dx,
-      child: Draggable(
-        feedback: Container(
-          width: stackImageCalSizeList[index].width,
-          height: stackImageCalSizeList[index].height,
-          decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.2),
-              border: Border.all(width: 1, color: Colors.black)),
-          child: Image.asset(
-            'lib/images/jigsaw/p${index + 1}.png',
-            fit: BoxFit.cover,
+      child: Visibility(
+        visible: !answerList[index],
+        child: Draggable(
+          data: index,
+          feedback: Container(
+            width: stackImageCalSizeList[index].width,
+            height: stackImageCalSizeList[index].height,
+            decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.2),
+                border: Border.all(width: 1, color: Colors.black)),
+            child: Image.asset(
+              'lib/images/jigsaw/p${index + 1}.png',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        childWhenDragging: Container(),
-        onDragEnd: (detail) {
-          double _dx = 0.0;
-          double _dy = 0.0;
-          double limitX = (leftSize.width.toInt() - leftPieceSize).toDouble();
-          double limitY = (leftSize.height.toInt() - leftPieceSize).toDouble();
+          childWhenDragging: Container(),
+          onDragEnd: (detail) {
+            double _dx = 0.0;
+            double _dy = 0.0;
+            double limitX = (leftSize.width.toInt() - leftPieceSize).toDouble();
+            double limitY =
+                (leftSize.height.toInt() - leftPieceSize).toDouble();
 
-          if (detail.offset.dx < 0) {
-            _dx = 0.0;
-          } else if (detail.offset.dx > limitX) {
-            _dx = limitX;
-          } else {
-            _dx = detail.offset.dx;
-          }
+            if (detail.offset.dx < 0) {
+              _dx = 0.0;
+            } else if (detail.offset.dx > limitX) {
+              _dx = limitX;
+            } else {
+              _dx = detail.offset.dx;
+            }
 
-          if (detail.offset.dy < 0) {
-            _dy = 0.0;
-          } else if (detail.offset.dy > limitY) {
-            _dy = limitY;
-          } else {
-            _dy = detail.offset.dy;
-          }
+            if (detail.offset.dy < 0) {
+              _dy = 0.0;
+            } else if (detail.offset.dy > limitY) {
+              _dy = limitY;
+            } else {
+              _dy = detail.offset.dy;
+            }
 
-          List<int> tmp = [...orderStack];
-          tmp.remove(index);
-          tmp.add(index);
+            List<int> tmp = [...orderStack];
+            tmp.remove(index);
+            tmp.add(index);
 
-          setState(() {
-            leftRandomPosition[index] = Offset(_dx, _dy);
-            orderStack = tmp;
-          });
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.2),
-              border: Border.all(width: 1, color: Colors.black)),
-          child: Image.asset(
-            'lib/images/jigsaw/p${index + 1}.png',
-            fit: BoxFit.cover,
+            setState(() {
+              leftRandomPosition[index] = Offset(_dx, _dy);
+              orderStack = tmp;
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.2),
+                border: Border.all(width: 1, color: Colors.black)),
+            child: Image.asset(
+              'lib/images/jigsaw/p${index + 1}.png',
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),

@@ -9,6 +9,7 @@ import '../view/home.dart';
 import '../view/login.dart';
 import '../view/matching.dart';
 import '../view/menu.dart';
+import '../view_model/jigsaw_view_model.dart';
 import '../view_model/matching_view_model.dart';
 
 class Application extends StatelessWidget {
@@ -28,6 +29,7 @@ class Application extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
         ChangeNotifierProvider(create: (_) => MatchingViewModel()),
+        ChangeNotifierProvider(create: (_) => JigsawViewModel()),
       ],
       child: MaterialApp.router(
           debugShowCheckedModeBanner: false,

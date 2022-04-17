@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 import 'package:matching/view_model/matching_view_model.dart';
+import 'package:matching/widget/finish.dart';
 import 'package:provider/provider.dart';
 
 import '../widget/left_puzzle.dart';
@@ -86,7 +84,8 @@ class _MatchingState extends State<Matching> {
             ],
           ),
           Consumer<MatchingViewModel>(builder: (_, vm, __) {
-            return Visibility(
+            return FinishWidget(vm: vm);
+            /* Visibility(
               visible: vm.complete,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -104,7 +103,7 @@ class _MatchingState extends State<Matching> {
                       child: const Text('back'))
                 ],
               ),
-            );
+            );*/
           })
         ],
       ),
