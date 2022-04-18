@@ -85,25 +85,6 @@ class _MatchingState extends State<Matching> {
           ),
           Consumer<MatchingViewModel>(builder: (_, vm, __) {
             return FinishWidget(vm: vm);
-            /* Visibility(
-              visible: vm.complete,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: SizedBox(
-                      width: 300,
-                      height: 300,
-                      child: Lottie.network(
-                          'https://assets9.lottiefiles.com/packages/lf20_l4xxtfd3.json'),
-                    ),
-                  ),
-                  ElevatedButton(
-                      onPressed: () => GoRouter.of(context).pop(),
-                      child: const Text('back'))
-                ],
-              ),
-            );*/
           })
         ],
       ),

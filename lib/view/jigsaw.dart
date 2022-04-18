@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -65,9 +67,18 @@ class _JigsawState extends State<Jigsaw> {
   }
 
   late String deviceKind;
+  bool readyToStart = false;
+
+  late Timer _timer;
+  int second = 3;
 
   @override
   void initState() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        second--;
+      });
+    });
     deviceKind = getDeviceType();
     leftSize = Size.zero;
     Provider.of<JigsawViewModel>(context, listen: false).initViewModel();
@@ -77,7 +88,20 @@ class _JigsawState extends State<Jigsaw> {
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       initOffsetOfKeyListBuild();
     });
+
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      _timer.cancel();
+      setState(() {
+        readyToStart = true;
+      });
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -179,7 +203,7 @@ class _JigsawState extends State<Jigsaw> {
                                             child: Visibility(
                                               visible: value,
                                               child: Image.asset(
-                                                  'lib/images/jigsaw/p${index + 1}.png'),
+                                                  'lib/images/jigsaw/b/p${index + 1}.png'),
                                             ),
                                             decoration: const BoxDecoration(
                                               color: Colors.transparent,
@@ -197,7 +221,39 @@ class _JigsawState extends State<Jigsaw> {
         ),
         Consumer<JigsawViewModel>(builder: (_, vm, __) {
           return FinishWidget(vm: vm);
-        })
+        }),
+        Visibility(
+          visible: !readyToStart,
+          child: Stack(
+            children: [
+              Container(
+                color: Colors.white,
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Image.asset(
+                          'lib/images/jigsaw/b/b.png',
+                          fit: BoxFit.contain,
+                        )),
+                  ),
+                ),
+              ),
+              Center(
+                child: Material(
+                  color: Colors.transparent,
+                  child: Text(
+                    '$second',
+                    style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width * 0.2,
+                        color: Colors.blue),
+                  ),
+                ),
+              )
+            ],
+          ),
+        )
       ],
     );
   }
@@ -285,7 +341,7 @@ class _JigsawState extends State<Jigsaw> {
                 color: Colors.grey.withOpacity(0.2),
                 border: Border.all(width: 1, color: Colors.black)),
             child: Image.asset(
-              'lib/images/jigsaw/p${index + 1}.png',
+              'lib/images/jigsaw/b/p${index + 1}.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -327,7 +383,7 @@ class _JigsawState extends State<Jigsaw> {
                 color: Colors.grey.withOpacity(0.2),
                 border: Border.all(width: 1, color: Colors.black)),
             child: Image.asset(
-              'lib/images/jigsaw/p${index + 1}.png',
+              'lib/images/jigsaw/b/p${index + 1}.png',
               fit: BoxFit.cover,
             ),
           ),
