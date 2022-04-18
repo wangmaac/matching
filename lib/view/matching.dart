@@ -51,37 +51,40 @@ class _MatchingState extends State<Matching> {
         body: SafeArea(
       child: Stack(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: leftPuzzleList
-                      .asMap()
-                      .map((index, e) => MapEntry(
-                          index,
-                          LeftPuzzle(
-                            index: index,
-                            status: e.toString(),
-                            width: buttonWidth,
-                          )))
-                      .values
-                      .toList()),
-              Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: rightPuzzleList
-                      .asMap()
-                      .map((index, e) => MapEntry(
-                          index,
-                          RightPuzzle(
-                            value: e.toString(),
-                            width: buttonWidth,
-                          )))
-                      .values
-                      .toList()),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: leftPuzzleList
+                        .asMap()
+                        .map((index, e) => MapEntry(
+                            index,
+                            LeftPuzzle(
+                              index: index,
+                              status: e.toString(),
+                              width: buttonWidth,
+                            )))
+                        .values
+                        .toList()),
+                Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: rightPuzzleList
+                        .asMap()
+                        .map((index, e) => MapEntry(
+                            index,
+                            RightPuzzle(
+                              value: e.toString(),
+                              width: buttonWidth,
+                            )))
+                        .values
+                        .toList()),
+              ],
+            ),
           ),
           Consumer<MatchingViewModel>(builder: (_, vm, __) {
             return FinishWidget(vm: vm);

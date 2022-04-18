@@ -17,7 +17,6 @@ class Menu extends StatelessWidget {
       MenuButtonModel(
           navUrl: '/jigsaw', imageUrl: 'lib/images/jigsaw_button.png'),
     ];
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -66,7 +65,12 @@ class Menu extends StatelessWidget {
   Widget menuButton(BuildContext context, String navURL, String imageURL) {
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).push(navURL);
+        if (Provider.of<ProfileViewModel>(context, listen: false)
+            .checkLogin()) {
+          GoRouter.of(context).push(navURL);
+        } else {
+          GoRouter.of(context).go('/login');
+        }
       },
       child: Container(
         width: MediaQuery.of(context).size.height / 4,

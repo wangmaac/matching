@@ -9,7 +9,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 2000), () {
       if (!Provider.of<ProfileViewModel>(context, listen: false).checkLogin()) {
         GoRouter.of(context).go('/login');
       } else {
