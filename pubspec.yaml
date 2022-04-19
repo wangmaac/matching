@@ -44,6 +44,7 @@ dependencies:
   google_fonts: ^2.3.1
   lottie: ^1.2.2
   audioplayers: ^0.20.1
+  image_picker: ^0.8.5
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +73,37 @@ flutter:
     - lib/images/
     - lib/images/matching/
     - lib/images/jigsaw/
-    - lib/images/jigsaw/b/
+    - lib/images/jigsaw/la/
+    - lib/images/jigsaw/lb/
+    - lib/images/jigsaw/lc/
+    - lib/images/jigsaw/ld/
+    - lib/images/jigsaw/le/
+    - lib/images/jigsaw/lf/
+    - lib/images/jigsaw/lg/
+    - lib/images/jigsaw/lh/
+    - lib/images/jigsaw/li/
+    - lib/images/jigsaw/lj/
+    - lib/images/jigsaw/lk/
+    - lib/images/jigsaw/ll/
+    - lib/images/jigsaw/lm/
+    - lib/images/jigsaw/ln/
+    - lib/images/jigsaw/lo/
+    - lib/images/jigsaw/lp/
+    - lib/images/jigsaw/lq/
+    - lib/images/jigsaw/lr/
+    - lib/images/jigsaw/ls/
+    - lib/images/jigsaw/lt/
+    - lib/images/jigsaw/lu/
+    - lib/images/jigsaw/lv/
+    - lib/images/jigsaw/lw/
+    - lib/images/jigsaw/lx/
+    - lib/images/jigsaw/ly/
+    - lib/images/jigsaw/lz/
+    - lib/images/jigsaw/ua/
+    - lib/images/jigsaw/ub/
+    - lib/images/jigsaw/us/
+    - lib/images/jigsaw/ux/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

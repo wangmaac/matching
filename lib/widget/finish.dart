@@ -23,7 +23,7 @@ class FinishWidget extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-              onPressed: () => GoRouter.of(context).pop(),
+              onPressed: () => GoRouter.of(context).go('/menu'),
               child: const Center(
                   child: FittedBox(
                 child: Text(

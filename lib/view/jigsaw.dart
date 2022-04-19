@@ -3,8 +3,10 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:matching/view_model/device_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../view_model/jigsaw_view_model.dart';
@@ -18,12 +20,13 @@ class Jigsaw extends StatefulWidget {
 }
 
 class _JigsawState extends State<Jigsaw> {
+  final String presentString = 'ub';
+
   //todo : KEY of Guide Grid Size & Position
   List<GlobalKey> keyList = [];
   final GlobalKey leftKey = GlobalKey();
 
   late Size leftSize;
-
   //todo : Guide Grid Size & Position
   List<Offset> offsetOfKeyList = [];
   List<Size> sizeOfKeyList = [];
@@ -60,13 +63,6 @@ class _JigsawState extends State<Jigsaw> {
 
   final AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
 
-  String getDeviceType() {
-    final MediaQueryData data =
-        MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    return data.size.shortestSide < 600 ? 'mobile' : 'pad';
-  }
-
-  late String deviceKind;
   bool readyToStart = false;
 
   late Timer _timer;
@@ -79,7 +75,6 @@ class _JigsawState extends State<Jigsaw> {
         second--;
       });
     });
-    deviceKind = getDeviceType();
     leftSize = Size.zero;
     Provider.of<JigsawViewModel>(context, listen: false).initViewModel();
     answerList = List.filled(pieceCount, false);
@@ -89,7 +84,7 @@ class _JigsawState extends State<Jigsaw> {
       initOffsetOfKeyListBuild();
     });
 
-    Future.delayed(const Duration(milliseconds: 3000), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       _timer.cancel();
       setState(() {
         readyToStart = true;
@@ -117,7 +112,7 @@ class _JigsawState extends State<Jigsaw> {
         Scaffold(
           body: Row(
             children: [
-              //todo : left expanded
+              //todo : left expanded part
               Expanded(
                   key: leftKey,
                   flex: 1,
@@ -126,15 +121,19 @@ class _JigsawState extends State<Jigsaw> {
                         ? orderStack.map((e) => movingPiece(e)).toList()
                         : [],
                   )),
-              //todo : right expanded
+              //todo : right expanded part
               Expanded(
-                  flex: deviceKind == 'pad' ? 2 : 1,
+                  flex: Provider.of<DeviceViewModel>(context, listen: false)
+                              .deviceKind ==
+                          'pad'
+                      ? 2
+                      : 1,
                   child: Stack(
                     children: [
                       Center(
                         child: GridView.count(
                             crossAxisCount: 3,
-                            childAspectRatio: 1,
+                            childAspectRatio: 1 / 1,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             padding: EdgeInsets.symmetric(
@@ -162,7 +161,7 @@ class _JigsawState extends State<Jigsaw> {
                                       },
                                       onAccept: (int data) {
                                         advancedPlayer.play(
-                                            'https://ssl.gstatic.com/dictionary/static/sounds/oxford/wow--_gb_1.mp3',
+                                            'https://ssl.gstatic.com/dictionary/static/sounds/oxford/correct--_gb_1.mp3',
                                             volume: 5.0);
                                         setState(() {
                                           answerList[data] = true;
@@ -203,7 +202,9 @@ class _JigsawState extends State<Jigsaw> {
                                             child: Visibility(
                                               visible: value,
                                               child: Image.asset(
-                                                  'lib/images/jigsaw/b/p${index + 1}.png'),
+                                                'lib/images/jigsaw/$presentString/r$presentString-${index + 1}.png',
+                                                fit: BoxFit.fitWidth,
+                                              ),
                                             ),
                                             decoration: const BoxDecoration(
                                               color: Colors.transparent,
@@ -222,6 +223,8 @@ class _JigsawState extends State<Jigsaw> {
         Consumer<JigsawViewModel>(builder: (_, vm, __) {
           return FinishWidget(vm: vm);
         }),
+
+        //ready to start
         Visibility(
           visible: !readyToStart,
           child: Stack(
@@ -234,7 +237,7 @@ class _JigsawState extends State<Jigsaw> {
                     child: Padding(
                         padding: const EdgeInsets.all(30.0),
                         child: Image.asset(
-                          'lib/images/jigsaw/b/b.png',
+                          'lib/images/jigsaw/$presentString/$presentString.png',
                           fit: BoxFit.contain,
                         )),
                   ),
@@ -309,13 +312,13 @@ class _JigsawState extends State<Jigsaw> {
         }
       }
       stackImageCalSizeList.add(Size(
-          sizeOfKeyList[i].width + (sizeOfKeyList[i].width * (_width * 0.133)),
+          sizeOfKeyList[i].width + (sizeOfKeyList[i].width * (_width * 0.13)),
           sizeOfKeyList[i].height +
-              (sizeOfKeyList[i].height * (_height * 0.133))));
+              (sizeOfKeyList[i].height * (_height * 0.13))));
 
       stackImageAddPositionList.add(Offset(
-          (sizeOfKeyList[i].width * (_positionX * 0.133)),
-          (sizeOfKeyList[i].height * (_positionY * 0.133))));
+          (sizeOfKeyList[i].width * (_positionX * 0.13)),
+          (sizeOfKeyList[i].height * (_positionY * 0.13))));
     }
     leftRandomPositionBuild();
 
@@ -334,14 +337,11 @@ class _JigsawState extends State<Jigsaw> {
         visible: !answerList[index],
         child: Draggable(
           data: index,
-          feedback: Container(
+          feedback: SizedBox(
             width: stackImageCalSizeList[index].width,
             height: stackImageCalSizeList[index].height,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.2),
-                border: Border.all(width: 1, color: Colors.black)),
             child: Image.asset(
-              'lib/images/jigsaw/b/p${index + 1}.png',
+              'lib/images/jigsaw/$presentString/l$presentString-${index + 1}.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -378,14 +378,9 @@ class _JigsawState extends State<Jigsaw> {
               orderStack = tmp;
             });
           },
-          child: Container(
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.2),
-                border: Border.all(width: 1, color: Colors.black)),
-            child: Image.asset(
-              'lib/images/jigsaw/b/p${index + 1}.png',
-              fit: BoxFit.cover,
-            ),
+          child: Image.asset(
+            'lib/images/jigsaw/$presentString/l$presentString-${index + 1}.png',
+            fit: BoxFit.contain,
           ),
         ),
       ),

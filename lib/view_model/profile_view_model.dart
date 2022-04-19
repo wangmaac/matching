@@ -4,20 +4,11 @@ import 'package:go_router/go_router.dart';
 import '../model/profile.dart';
 
 class ProfileViewModel extends ChangeNotifier {
-  ProfileModel? _currentProfile;
+  ProfileModel? currentProfile;
+  bool login = false;
 
-  setProfile(ProfileModel user, BuildContext context) {
-    _currentProfile = user;
-    context.go('/menu');
+  setProfile(ProfileModel user) {
+    currentProfile = user;
+    login = true;
   }
-
-  bool checkLogin() {
-    if (_currentProfile == null) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  ProfileModel get profile => _currentProfile!;
 }

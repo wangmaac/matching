@@ -35,7 +35,9 @@ class Menu extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 20.0),
                     child: Text(
-                      Provider.of<ProfileViewModel>(context).profile.name,
+                      Provider.of<ProfileViewModel>(context)
+                          .currentProfile!
+                          .name,
                       style: const TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -64,14 +66,7 @@ class Menu extends StatelessWidget {
 
   Widget menuButton(BuildContext context, String navURL, String imageURL) {
     return GestureDetector(
-      onTap: () {
-        if (Provider.of<ProfileViewModel>(context, listen: false)
-            .checkLogin()) {
-          GoRouter.of(context).push(navURL);
-        } else {
-          GoRouter.of(context).go('/login');
-        }
-      },
+      onTap: () => GoRouter.of(context).push(navURL),
       child: Container(
         width: MediaQuery.of(context).size.height / 4,
         height: MediaQuery.of(context).size.height / 4,
