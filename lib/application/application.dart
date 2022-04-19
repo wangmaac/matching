@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:matching/view/jigsaw.dart';
-import 'package:matching/view/register.dart';
 import 'package:matching/view_model/profile_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../view/home.dart';
+import '../view/jigsaw.dart';
 import '../view/login.dart';
 import '../view/matching.dart';
 import '../view/menu.dart';
@@ -20,24 +19,14 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GoRouter _goRouter = GoRouter(initialLocation: '/', routes: [
-      GoRoute(
-          path: '/',
-          builder: (_, state) {
-            print(state.subloc);
-            print(state.extra.toString());
-            print(state.error);
-            return const Home();
-          }),
-      //GoRoute(path: '/', builder: (_, state) => const Login()),
-      GoRoute(path: '/login', builder: (_, state) => const Login()),
-      GoRoute(path: '/menu', builder: (_, state) => const Menu()),
-      GoRoute(path: '/register', builder: (_, state) => const Register()),
-      GoRoute(path: '/matching', builder: (_, state) => const Matching()),
-      GoRoute(
-          path: '/jigsaw',
-          builder: (_, state) {
-            return const Jigsaw();
-          }),
+      GoRoute(path: '/', builder: (_, state) => const Home(), routes: [
+        GoRoute(path: 'login', builder: (_, state) => const Login()),
+        GoRoute(path: 'menu', builder: (_, state) => const Menu(), routes: [
+          GoRoute(path: 'matching', builder: (_, state) => const Matching()),
+          GoRoute(path: 'jigsaw', builder: (_, state) => const Jigsaw()),
+        ]),
+        //GoRoute(path: '/register', builder: (_, state) => const Register()),
+      ]),
     ]);
 
     return MultiProvider(
