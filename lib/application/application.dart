@@ -20,13 +20,24 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GoRouter _goRouter = GoRouter(initialLocation: '/', routes: [
-      //GoRoute(path: '/', builder: (_, state) => const Home()),
-      GoRoute(path: '/', builder: (_, state) => const Login()),
+      GoRoute(
+          path: '/',
+          builder: (_, state) {
+            print(state.subloc);
+            print(state.extra.toString());
+            print(state.error);
+            return const Home();
+          }),
+      //GoRoute(path: '/', builder: (_, state) => const Login()),
       GoRoute(path: '/login', builder: (_, state) => const Login()),
       GoRoute(path: '/menu', builder: (_, state) => const Menu()),
       GoRoute(path: '/register', builder: (_, state) => const Register()),
       GoRoute(path: '/matching', builder: (_, state) => const Matching()),
-      GoRoute(path: '/jigsaw', builder: (_, state) => const Jigsaw()),
+      GoRoute(
+          path: '/jigsaw',
+          builder: (_, state) {
+            return const Jigsaw();
+          }),
     ]);
 
     return MultiProvider(

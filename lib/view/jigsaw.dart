@@ -31,7 +31,7 @@ class _JigsawState extends State<Jigsaw> {
   List<Offset> offsetOfKeyList = [];
   List<Size> sizeOfKeyList = [];
 
-  //todo : Main Stack Grid Size & Position --order by LTRB
+  //todo : Main Stack Grid Size & Position --order by left->top->right->bottom
   List<List> stackImageShapeList = [
     [0, 0, 0, 1],
     [1, 0, 1, 1],
@@ -84,12 +84,12 @@ class _JigsawState extends State<Jigsaw> {
       initOffsetOfKeyListBuild();
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () {
+/*    Future.delayed(const Duration(milliseconds: 500), () {
       _timer.cancel();
       setState(() {
         readyToStart = true;
       });
-    });
+    });*/
     super.initState();
   }
 

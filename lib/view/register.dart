@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-
-import '../view_model/device_view_model.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -18,12 +16,13 @@ class _RegisterState extends State<Register> {
   late TextEditingController _controllerName;
   late TextEditingController _controllerAge;
 
-  List<XFile> _imageFileList = [];
+  late List<XFile> _imageFileList;
 
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
+    _imageFileList = [];
     _controllerName = TextEditingController();
     _controllerAge = TextEditingController();
     super.initState();
@@ -69,13 +68,19 @@ class _RegisterState extends State<Register> {
                   child: TextField(
                       controller: _controllerName,
                       maxLength: 15,
-                      decoration: InputDecoration(hintText: '이름을 입력하세요.')),
+                      decoration:
+                          const InputDecoration(hintText: '이름을 입력하세요.')),
                 ),
                 SizedBox(
                   child: TextField(
-                      controller: _controllerAge,
-                      maxLength: 2,
-                      decoration: InputDecoration(hintText: '나이를 입력하세요.')),
+                    controller: _controllerAge,
+                    maxLength: 2,
+                    decoration:
+                        const InputDecoration(hintText: '나이를 입력하세요(숫자만).'),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                    ],
+                  ),
                   width: _width / 4,
                 ),
                 const SizedBox(
