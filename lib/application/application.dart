@@ -18,16 +18,25 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GoRouter _goRouter = GoRouter(initialLocation: '/', routes: [
-      GoRoute(path: '/', builder: (_, state) => const Home(), routes: [
-        GoRoute(path: 'login', builder: (_, state) => const Login()),
-        GoRoute(path: 'menu', builder: (_, state) => const Menu(), routes: [
-          GoRoute(path: 'matching', builder: (_, state) => const Matching()),
-          GoRoute(path: 'jigsaw', builder: (_, state) => const Jigsaw()),
-        ]),
-        //GoRoute(path: '/register', builder: (_, state) => const Register()),
-      ]),
-    ]);
+    GoRouter _goRouter = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(path: '/', builder: (_, state) => const Home(), routes: [
+            GoRoute(path: 'login', builder: (_, state) => const Login()),
+            GoRoute(path: 'menu', builder: (_, state) => const Menu(), routes: [
+              GoRoute(
+                  path: 'matching', builder: (_, state) => const Matching()),
+              GoRoute(path: 'jigsaw', builder: (_, state) => const Jigsaw()),
+            ]),
+            //GoRoute(path: '/register', builder: (_, state) => const Register()),
+          ]),
+        ],
+        errorPageBuilder: (context, state) => MaterialPage(
+                child: Scaffold(
+              body: Center(
+                child: Text(state.error.toString()),
+              ),
+            )));
 
     return MultiProvider(
       providers: [
