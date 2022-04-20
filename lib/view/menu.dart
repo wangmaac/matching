@@ -13,9 +13,9 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     List<MenuButtonModel> menuButtonList = [
       MenuButtonModel(
-          navUrl: '/matching', imageUrl: 'lib/images/puzzle_button.png'),
+          navUrl: 'matching', imageUrl: 'lib/images/puzzle_button.png'),
       MenuButtonModel(
-          navUrl: '/jigsaw', imageUrl: 'lib/images/jigsaw_button.png'),
+          navUrl: 'jigsawBoard', imageUrl: 'lib/images/jigsaw_button.png'),
     ];
     return Scaffold(
       body: SafeArea(
@@ -31,20 +31,22 @@ class Menu extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: Text(
-                      Provider.of<ProfileViewModel>(context)
-                          .currentProfile!
-                          .name,
-                      style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ],
+                children: Provider.of<ProfileViewModel>(context).isLogin
+                    ? [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Text(
+                            Provider.of<ProfileViewModel>(context)
+                                .currentProfile!
+                                .name,
+                            style: const TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ]
+                    : [],
               ),
             ), //TITLE BAR
             Expanded(
@@ -66,7 +68,8 @@ class Menu extends StatelessWidget {
 
   Widget menuButton(BuildContext context, String navURL, String imageURL) {
     return GestureDetector(
-      onTap: () => GoRouter.of(context).push(navURL),
+      onTap: () => GoRouter.of(context).pushNamed(navURL),
+      //onTap: () => GoRouter.of(context).go(navURL),
       child: Container(
         width: MediaQuery.of(context).size.height / 4,
         height: MediaQuery.of(context).size.height / 4,

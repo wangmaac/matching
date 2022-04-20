@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:matching/view_model/device_view_model.dart';
-import 'package:provider/provider.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import '../model/profile.dart';
+import '../model/hive_model/user.dart';
 import '../widget/profile.dart';
 
 class Login extends StatelessWidget {
@@ -13,55 +13,6 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<DeviceViewModel>(context, listen: false).init();
-    List profileList = [
-      ProfileModel(
-          name: '마루치',
-          age: 9,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtNy7bmHvQEaTWj9L2wP1NiwJhQBZVvbopRw&usqp=CAU'),
-      ProfileModel(
-          name: '아라치',
-          age: 9,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS5ZQJhO7su-dBHZcUzVWl06mj9slXYcyW9w&usqp=CAU'),
-      ProfileModel(
-          name: '가물치',
-          age: 10,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqaV1jsp0fPmumrlnceXZxxX0ifD9KXxaWkQ&usqp=CAU'),
-      ProfileModel(
-          name: '아라치',
-          age: 9,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS5ZQJhO7su-dBHZcUzVWl06mj9slXYcyW9w&usqp=CAU'),
-      ProfileModel(
-          name: '가물치',
-          age: 10,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqaV1jsp0fPmumrlnceXZxxX0ifD9KXxaWkQ&usqp=CAU'),
-      ProfileModel(
-          name: '아라치',
-          age: 9,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS5ZQJhO7su-dBHZcUzVWl06mj9slXYcyW9w&usqp=CAU'),
-      ProfileModel(
-          name: '가물치',
-          age: 10,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqaV1jsp0fPmumrlnceXZxxX0ifD9KXxaWkQ&usqp=CAU'),
-      ProfileModel(
-          name: '아라치',
-          age: 9,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS5ZQJhO7su-dBHZcUzVWl06mj9slXYcyW9w&usqp=CAU'),
-      ProfileModel(
-          name: '가물치',
-          age: 10,
-          url:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqaV1jsp0fPmumrlnceXZxxX0ifD9KXxaWkQ&usqp=CAU'),
-    ];
-
     return Container(
       decoration: const BoxDecoration(
           image: DecorationImage(
@@ -103,23 +54,26 @@ class Login extends StatelessWidget {
                   ),
                   Expanded(
                     flex: 3,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                          child: AspectRatio(
-                            aspectRatio: 9 / 12,
-                            child: Container(
-                              child: Profile(profileModel: profileList[index]),
-                              //color: Colors.blue,
-                            ),
-                          ),
-                        );
-                        //Profile(profileModel: profileList[index]);
-                      },
-                      itemCount: profileList.length,
-                    ),
+                    child: ValueListenableBuilder(
+                        valueListenable:
+                            Hive.box<UserModel>('user').listenable(),
+                        builder: (context, Box<UserModel> box, child) {
+                          return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0),
+                                child: AspectRatio(
+                                  aspectRatio: 9 / 12,
+                                  child:
+                                      Profile(profileModel: box.getAt(index)!),
+                                ),
+                              );
+                            },
+                            itemCount: box.length,
+                          );
+                        }),
                   ),
                 ],
               ),

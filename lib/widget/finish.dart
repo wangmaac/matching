@@ -11,26 +11,38 @@ class FinishWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Visibility(
       visible: vm.complete,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Center(
-            child: SizedBox(
-              width: 500,
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: Lottie.network(
-                  'https://assets9.lottiefiles.com/packages/lf20_l4xxtfd3.json'),
-            ),
+      child: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.6,
+          height: MediaQuery.of(context).size.height * 0.8,
+          color: Colors.grey.withOpacity(0.5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Lottie.network(
+                    'https://assets9.lottiefiles.com/packages/lf20_l4xxtfd3.json'),
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 80,
+                child: ElevatedButton(
+                    onPressed: () => GoRouter.of(context).pop(),
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black38)),
+                    child: const Center(
+                      child: FittedBox(
+                        child: Text(
+                          'back to menu',
+                          textScaleFactor: 3.5,
+                        ),
+                      ),
+                    )),
+              )
+            ],
           ),
-          ElevatedButton(
-              onPressed: () => GoRouter.of(context).go('/menu'),
-              child: const Center(
-                  child: FittedBox(
-                child: Text(
-                  'back',
-                ),
-              )))
-        ],
+        ),
       ),
     );
     ;

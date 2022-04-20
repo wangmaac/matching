@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:matching/model/hive_model/user.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -19,6 +21,9 @@ class _RegisterState extends State<Register> {
   late List<XFile> _imageFileList;
 
   final ImagePicker _picker = ImagePicker();
+
+  XFile? selectImageFile;
+  String urlPath = '';
 
   @override
   void initState() {
@@ -105,7 +110,21 @@ class _RegisterState extends State<Register> {
                                   foregroundColor:
                                       MaterialStateProperty.all<Color>(
                                           Colors.black)),
-                              onPressed: () {},
+                              onPressed: () async {
+                                int id = 0;
+                                final box = await Hive.box<UserModel>('user');
+                                box
+                                    .put(
+                                        _controllerName.text,
+                                        UserModel(
+                                          name: _controllerName.text,
+                                          age: int.parse(_controllerAge.text),
+                                          image: urlPath,
+                                        ))
+                                    .then((value) {
+                                  GoRouter.of(context).pop();
+                                });
+                              },
                               child: const Text('확인'))),
                     ],
                   ),
@@ -122,6 +141,8 @@ class _RegisterState extends State<Register> {
   Future<void> _onImageButtonPressed(ImageSource source,
       {BuildContext? context, bool isMultiImage = false}) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
+    selectImageFile = pickedFile;
+    urlPath = selectImageFile!.path;
     if (pickedFile == null) {
       print('이미지를 선택하지 않았음');
     } else {

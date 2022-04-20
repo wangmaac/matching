@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matching/model/profile.dart';
 import 'package:provider/provider.dart';
 
+import '../model/hive_model/user.dart';
+import '../router/routes.dart';
 import '../view_model/profile_view_model.dart';
 
 class Profile extends StatelessWidget {
-  final ProfileModel profileModel;
+  final UserModel profileModel;
   const Profile({Key? key, required this.profileModel}) : super(key: key);
 
   @override
@@ -16,7 +20,7 @@ class Profile extends StatelessWidget {
       onTap: () {
         Provider.of<ProfileViewModel>(context, listen: false)
             .setProfile(profileModel);
-        context.go('/menu');
+        context.goNamed('menu');
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
@@ -31,8 +35,8 @@ class Profile extends StatelessWidget {
               ),
               Expanded(
                 flex: 5,
-                child: Image.network(
-                  profileModel.url,
+                child: Image.file(
+                  File(profileModel.image),
                   errorBuilder: (context, object, trace) => Center(
                       child: Text(
                     'No Picture',

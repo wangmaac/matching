@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
+import '../model/hive_model/user.dart';
 import '../model/profile.dart';
 
 class ProfileViewModel extends ChangeNotifier {
-  ProfileModel? currentProfile;
-  bool login = false;
+  UserModel? currentProfile;
+  bool isLogin = false;
 
-  setProfile(ProfileModel user) {
+  setProfile(UserModel user) {
     currentProfile = user;
-    login = true;
+    isLogin = true;
+    notifyListeners();
   }
 }

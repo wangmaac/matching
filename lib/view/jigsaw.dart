@@ -13,14 +13,15 @@ import '../view_model/jigsaw_view_model.dart';
 import '../widget/finish.dart';
 
 class Jigsaw extends StatefulWidget {
-  const Jigsaw({Key? key}) : super(key: key);
+  final String id;
+  const Jigsaw({Key? key, required this.id}) : super(key: key);
 
   @override
   State<Jigsaw> createState() => _JigsawState();
 }
 
 class _JigsawState extends State<Jigsaw> {
-  final String presentString = 'ub';
+  late String presentString;
 
   //todo : KEY of Guide Grid Size & Position
   List<GlobalKey> keyList = [];
@@ -75,6 +76,9 @@ class _JigsawState extends State<Jigsaw> {
         second--;
       });
     });
+
+    presentString = widget.id;
+
     leftSize = Size.zero;
     Provider.of<JigsawViewModel>(context, listen: false).initViewModel();
     answerList = List.filled(pieceCount, false);
@@ -84,12 +88,12 @@ class _JigsawState extends State<Jigsaw> {
       initOffsetOfKeyListBuild();
     });
 
-/*    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 3000), () {
       _timer.cancel();
       setState(() {
         readyToStart = true;
       });
-    });*/
+    });
     super.initState();
   }
 
@@ -126,7 +130,7 @@ class _JigsawState extends State<Jigsaw> {
                   flex: Provider.of<DeviceViewModel>(context, listen: false)
                               .deviceKind ==
                           'pad'
-                      ? 2
+                      ? 1
                       : 1,
                   child: Stack(
                     children: [
@@ -169,7 +173,7 @@ class _JigsawState extends State<Jigsaw> {
                                             Provider.of<JigsawViewModel>(
                                                     context,
                                                     listen: false)
-                                                .setComplete();
+                                                .setComplete(presentString);
                                           }
                                         });
                                       },

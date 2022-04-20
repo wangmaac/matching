@@ -11,11 +11,11 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(milliseconds: 1500), () {
-      if (Provider.of<ProfileViewModel>(context, listen: false).login) {
-        context.go('/menu');
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (Provider.of<ProfileViewModel>(context, listen: false).isLogin) {
+        context.goNamed('menu');
       } else {
-        context.go('/login');
+        context.goNamed('login');
       }
     });
     return const Scaffold(

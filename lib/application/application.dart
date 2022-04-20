@@ -4,11 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:matching/view_model/profile_view_model.dart';
 import 'package:provider/provider.dart';
 
-import '../view/home.dart';
-import '../view/jigsaw.dart';
-import '../view/login.dart';
-import '../view/matching.dart';
-import '../view/menu.dart';
+import '../router/routes.dart';
 import '../view_model/device_view_model.dart';
 import '../view_model/jigsaw_view_model.dart';
 import '../view_model/matching_view_model.dart';
@@ -18,40 +14,95 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GoRouter _goRouter = GoRouter(
-        initialLocation: '/',
+/*    late final GoRouter router = GoRouter(
+        urlPathStrategy: UrlPathStrategy.path,
+        debugLogDiagnostics: true,
         routes: [
-          GoRoute(path: '/', builder: (_, state) => const Home(), routes: [
-            GoRoute(path: 'login', builder: (_, state) => const Login()),
-            GoRoute(path: 'menu', builder: (_, state) => const Menu(), routes: [
-              GoRoute(
-                  path: 'matching', builder: (_, state) => const Matching()),
-              GoRoute(path: 'jigsaw', builder: (_, state) => const Jigsaw()),
-            ]),
-            //GoRoute(path: '/register', builder: (_, state) => const Register()),
-          ]),
+          //same to initial page;
+          GoRoute(
+            name: 'root',
+            path: '/',
+            redirect: (state) {
+              return state.namedLocation('login');
+            },
+          ),
+          GoRoute(
+            name: 'login',
+            path: '/login',
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: const Login(),
+            ),
+          ),
+          GoRoute(
+              name: 'menu',
+              path: '/menu',
+              pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    child: const Menu(),
+                  ),
+              routes: [
+                GoRoute(
+                  name: 'matching',
+                  path: 'matching',
+                  pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    child: const Matching(),
+                  ),
+                ),
+                GoRoute(
+                  name: 'jigsaw',
+                  path: 'jigsaw',
+                  pageBuilder: (context, state) => MaterialPage<Jigsaw>(
+                    key: state.pageKey,
+                    child: const Jigsaw(),
+                  ),
+                ),
+              ]),
+          GoRoute(
+            name: 'register',
+            path: '/register',
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: const Register(),
+            ),
+          ),
         ],
         errorPageBuilder: (context, state) => MaterialPage(
-                child: Scaffold(
+            key: state.pageKey,
+            child: Scaffold(
               body: Center(
                 child: Text(state.error.toString()),
               ),
-            )));
-
+            )));*/
+    ProfileViewModel profileViewModel = ProfileViewModel();
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
-        ChangeNotifierProvider(create: (_) => DeviceViewModel()),
-        ChangeNotifierProvider(create: (_) => MatchingViewModel()),
-        ChangeNotifierProvider(create: (_) => JigsawViewModel()),
+        ChangeNotifierProvider<ProfileViewModel>(
+            lazy: false, create: (_) => profileViewModel),
+        ChangeNotifierProvider<DeviceViewModel>(
+            lazy: false, create: (_) => DeviceViewModel()),
+        ChangeNotifierProvider<MatchingViewModel>(
+            lazy: false, create: (_) => MatchingViewModel()),
+        ChangeNotifierProvider<JigsawViewModel>(
+            lazy: false, create: (_) => JigsawViewModel()),
+        Provider<MyRouter>(
+          create: (_) {
+            return MyRouter(profileViewModel);
+          },
+        )
       ],
-      child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-              fontFamily: GoogleFonts.quicksand().fontFamily,
-              visualDensity: VisualDensity.adaptivePlatformDensity),
-          routeInformationParser: _goRouter.routeInformationParser,
-          routerDelegate: _goRouter.routerDelegate),
+      child: Builder(builder: (BuildContext context) {
+        Provider.of<DeviceViewModel>(context, listen: false).init();
+        final router = Provider.of<MyRouter>(context).router;
+        return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+                fontFamily: GoogleFonts.quicksand().fontFamily,
+                visualDensity: VisualDensity.adaptivePlatformDensity),
+            routeInformationParser: router.routeInformationParser,
+            routerDelegate: router.routerDelegate);
+      }),
     );
   }
 }
