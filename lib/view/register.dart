@@ -111,19 +111,31 @@ class _RegisterState extends State<Register> {
                                       MaterialStateProperty.all<Color>(
                                           Colors.black)),
                               onPressed: () async {
-                                int id = 0;
-                                final box = await Hive.box<UserModel>('user');
-                                box
-                                    .put(
-                                        _controllerName.text,
-                                        UserModel(
-                                          name: _controllerName.text,
-                                          age: int.parse(_controllerAge.text),
-                                          image: urlPath,
-                                        ))
-                                    .then((value) {
-                                  GoRouter.of(context).pop();
-                                });
+                                if (_controllerName.text.isEmpty ||
+                                    _controllerAge.text.isEmpty ||
+                                    selectImageFile == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('빈 칸이 있습니다.')));
+                                  return;
+                                } else {
+                                  int id = 0;
+                                  final box = Hive.box<UserModel>('user');
+                                  box
+                                      .put(
+                                          _controllerName.text,
+                                          UserModel(
+                                            name: _controllerName.text,
+                                            age: int.parse(_controllerAge.text),
+                                            image: urlPath,
+                                            jigsawAnswerList: [],
+                                          ))
+                                      .then((value) {
+                                    GoRouter.of(context).pop();
+                                    print('loading end');
+                                  });
+                                  print('loading start');
+                                }
                               },
                               child: const Text('확인'))),
                     ],

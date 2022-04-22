@@ -37,7 +37,7 @@ class Menu extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 20.0),
                           child: Text(
                             Provider.of<ProfileViewModel>(context)
-                                .currentProfile!
+                                .currentUser!
                                 .name,
                             style: const TextStyle(
                                 fontSize: 25,

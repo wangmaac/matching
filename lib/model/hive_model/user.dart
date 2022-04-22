@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
 
 part 'user.g.dart';
 
@@ -11,10 +10,12 @@ class UserModel {
   final int age;
   @HiveField(2)
   final String image;
+  @HiveField(3)
+  final List<String> jigsawAnswerList;
 
-  UserModel({
-    required this.name,
-    required this.age,
-    required this.image,
-  });
+  UserModel(
+      {required this.name,
+      required this.age,
+      required this.image,
+      required this.jigsawAnswerList});
 }

@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:matching/view_model/device_view_model.dart';
+import 'package:matching/view_model/jigsaw_view_model.dart';
+import 'package:matching/view_model/profile_view_model.dart';
 import 'package:provider/provider.dart';
-
-import '../view_model/jigsaw_view_model.dart';
+import '../model/hive_model/user.dart';
 import '../widget/finish.dart';
 
 class Jigsaw extends StatefulWidget {
@@ -22,6 +21,7 @@ class Jigsaw extends StatefulWidget {
 
 class _JigsawState extends State<Jigsaw> {
   late String presentString;
+  late String presentValue;
 
   //todo : KEY of Guide Grid Size & Position
   List<GlobalKey> keyList = [];
@@ -50,9 +50,7 @@ class _JigsawState extends State<Jigsaw> {
   List<Offset> stackImageAddPositionList = [];
 
   bool initComplete = false;
-
   late int leftPieceSize;
-
   final int pieceCount = 9;
   final double horizontalGridPadding = 50;
 
@@ -60,7 +58,7 @@ class _JigsawState extends State<Jigsaw> {
 
   List<Offset> leftRandomPosition = [];
 
-  late List<bool> answerList;
+//  late List<bool> answerList;
 
   final AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
 
@@ -68,6 +66,14 @@ class _JigsawState extends State<Jigsaw> {
 
   late Timer _timer;
   int second = 3;
+
+  String upperLowerChecker(String value) {
+    if (value.substring(0, 1) == 'u') {
+      return presentString.toUpperCase().substring(1, 2);
+    } else {
+      return presentString.toLowerCase().substring(1, 2);
+    }
+  }
 
   @override
   void initState() {
@@ -78,10 +84,15 @@ class _JigsawState extends State<Jigsaw> {
     });
 
     presentString = widget.id;
+    presentValue = upperLowerChecker(presentString);
+
+    UserModel user =
+        Provider.of<ProfileViewModel>(context, listen: false).currentUser!;
+    Provider.of<JigsawViewModel>(context, listen: false).setUser(user);
+    Provider.of<JigsawViewModel>(context, listen: false).initJigsaw(pieceCount);
 
     leftSize = Size.zero;
-    Provider.of<JigsawViewModel>(context, listen: false).initViewModel();
-    answerList = List.filled(pieceCount, false);
+    //섞인 퍼즐에서 먼저고른 피스가 위로 올라올수있도록 하기위해 순서를 지정함
     orderStack = List.generate(pieceCount, (index) => index);
     initKeyListBuild(pieceCount);
     SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -127,11 +138,7 @@ class _JigsawState extends State<Jigsaw> {
                   )),
               //todo : right expanded part
               Expanded(
-                  flex: Provider.of<DeviceViewModel>(context, listen: false)
-                              .deviceKind ==
-                          'pad'
-                      ? 1
-                      : 1,
+                  flex: 1,
                   child: Stack(
                     children: [
                       Center(
@@ -167,15 +174,10 @@ class _JigsawState extends State<Jigsaw> {
                                         advancedPlayer.play(
                                             'https://ssl.gstatic.com/dictionary/static/sounds/oxford/correct--_gb_1.mp3',
                                             volume: 5.0);
-                                        setState(() {
-                                          answerList[data] = true;
-                                          if (!answerList.contains(false)) {
-                                            Provider.of<JigsawViewModel>(
-                                                    context,
-                                                    listen: false)
-                                                .setComplete(presentString);
-                                          }
-                                        });
+                                        Provider.of<JigsawViewModel>(context,
+                                                listen: false)
+                                            .updatePiece(
+                                                context, index, presentValue);
                                       },
                                     )))
                                 .values
@@ -183,8 +185,10 @@ class _JigsawState extends State<Jigsaw> {
                       ),
                       IgnorePointer(
                         ignoring: true,
+                        //real image
                         child: Stack(
-                          children: answerList
+                          children: Provider.of<JigsawViewModel>(context)
+                              .answerPieceList
                               .asMap()
                               .map((index, value) => MapEntry(
                                   index,
@@ -224,10 +228,9 @@ class _JigsawState extends State<Jigsaw> {
             ],
           ),
         ),
-        Consumer<JigsawViewModel>(builder: (_, vm, __) {
-          return FinishWidget(vm: vm);
+        Consumer<JigsawViewModel>(builder: (context, vm, __) {
+          return FinishWidget(vm: vm.complete);
         }),
-
         //ready to start
         Visibility(
           visible: !readyToStart,
@@ -338,7 +341,8 @@ class _JigsawState extends State<Jigsaw> {
       top: leftRandomPosition[index].dy,
       left: leftRandomPosition[index].dx,
       child: Visibility(
-        visible: !answerList[index],
+        visible: !Provider.of<JigsawViewModel>(context, listen: false)
+            .answerPieceList[index],
         child: Draggable(
           data: index,
           feedback: SizedBox(

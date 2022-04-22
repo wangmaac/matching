@@ -87,7 +87,7 @@ class _MatchingState extends State<Matching> {
             ),
           ),
           Consumer<MatchingViewModel>(builder: (_, vm, __) {
-            return FinishWidget(vm: vm);
+            return FinishWidget(vm: vm.complete);
           })
         ],
       ),

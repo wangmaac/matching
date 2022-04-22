@@ -14,67 +14,6 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-/*    late final GoRouter router = GoRouter(
-        urlPathStrategy: UrlPathStrategy.path,
-        debugLogDiagnostics: true,
-        routes: [
-          //same to initial page;
-          GoRoute(
-            name: 'root',
-            path: '/',
-            redirect: (state) {
-              return state.namedLocation('login');
-            },
-          ),
-          GoRoute(
-            name: 'login',
-            path: '/login',
-            pageBuilder: (context, state) => MaterialPage(
-              key: state.pageKey,
-              child: const Login(),
-            ),
-          ),
-          GoRoute(
-              name: 'menu',
-              path: '/menu',
-              pageBuilder: (context, state) => MaterialPage(
-                    key: state.pageKey,
-                    child: const Menu(),
-                  ),
-              routes: [
-                GoRoute(
-                  name: 'matching',
-                  path: 'matching',
-                  pageBuilder: (context, state) => MaterialPage(
-                    key: state.pageKey,
-                    child: const Matching(),
-                  ),
-                ),
-                GoRoute(
-                  name: 'jigsaw',
-                  path: 'jigsaw',
-                  pageBuilder: (context, state) => MaterialPage<Jigsaw>(
-                    key: state.pageKey,
-                    child: const Jigsaw(),
-                  ),
-                ),
-              ]),
-          GoRoute(
-            name: 'register',
-            path: '/register',
-            pageBuilder: (context, state) => MaterialPage(
-              key: state.pageKey,
-              child: const Register(),
-            ),
-          ),
-        ],
-        errorPageBuilder: (context, state) => MaterialPage(
-            key: state.pageKey,
-            child: Scaffold(
-              body: Center(
-                child: Text(state.error.toString()),
-              ),
-            )));*/
     ProfileViewModel profileViewModel = ProfileViewModel();
     return MultiProvider(
       providers: [

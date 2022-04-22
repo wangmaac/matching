@@ -20,19 +20,22 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       name: fields[0] as String,
       age: fields[1] as int,
       image: fields[2] as String,
+      jigsawAnswerList: (fields[3] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.age)
       ..writeByte(2)
-      ..write(obj.image);
+      ..write(obj.image)
+      ..writeByte(3)
+      ..write(obj.jigsawAnswerList);
   }
 
   @override

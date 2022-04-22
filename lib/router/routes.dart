@@ -15,7 +15,7 @@ class MyRouter {
   MyRouter(this.loginState);
   late final router = GoRouter(
     refreshListenable: loginState,
-    debugLogDiagnostics: true, //앱 출시전에 제거
+    debugLogDiagnostics: false, //앱 출시전에 제거
     urlPathStrategy: UrlPathStrategy.path,
     routes: [
       GoRoute(
@@ -95,7 +95,6 @@ class MyRouter {
 
       // 로그인안되어있고, 로그인페이지도 아니고, 계정생성도 아니야? 그럼 로그인페이지
       if (!loggedIn && !loggingIn && !creatingAccount) {
-        print('// 로그인안되어있고, 로그인페이지도 아니고, 계정생성도 아니야? 그럼 로그인페이지');
         return loginLoc;
       }
       //로그인인데,,, 로그인페이지 또는 계정페이지이면

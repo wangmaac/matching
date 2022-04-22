@@ -10,7 +10,7 @@ class FinishWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: vm.complete,
+      visible: vm,
       child: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.6,

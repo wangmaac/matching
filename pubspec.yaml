@@ -104,9 +104,30 @@ flutter:
     - lib/images/jigsaw/lz/
     - lib/images/jigsaw/ua/
     - lib/images/jigsaw/ub/
+    - lib/images/jigsaw/uc/
+    - lib/images/jigsaw/ud/
+    - lib/images/jigsaw/ue/
+    - lib/images/jigsaw/uf/
+    - lib/images/jigsaw/ug/
+    - lib/images/jigsaw/uh/
+    - lib/images/jigsaw/ui/
+    - lib/images/jigsaw/uj/
+    - lib/images/jigsaw/uk/
+    - lib/images/jigsaw/ul/
+    - lib/images/jigsaw/um/
+    - lib/images/jigsaw/un/
+    - lib/images/jigsaw/uo/
+    - lib/images/jigsaw/up/
+    - lib/images/jigsaw/uq/
+    - lib/images/jigsaw/ur/
     - lib/images/jigsaw/us/
+    - lib/images/jigsaw/ut/
+    - lib/images/jigsaw/uu/
+    - lib/images/jigsaw/uv/
+    - lib/images/jigsaw/uw/
     - lib/images/jigsaw/ux/
-
+    - lib/images/jigsaw/uy/
+    - lib/images/jigsaw/uz/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
