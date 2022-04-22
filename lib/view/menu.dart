@@ -17,6 +17,7 @@ class Menu extends StatelessWidget {
       MenuButtonModel(
           navUrl: 'jigsawBoard', imageUrl: 'lib/images/jigsaw_button.png'),
     ];
+
     return Scaffold(
       body: SafeArea(
         child: Column(

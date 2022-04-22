@@ -41,7 +41,7 @@ class JigsawBoard extends StatelessWidget {
                   return Card(
                     elevation: 3.0,
                     color:
-                        vm.user!.jigsawAnswerList.contains(alphabetList[index])
+                        vm.user!.jigsawAnswerList!.contains(alphabetList[index])
                             ? Colors.indigo
                             : Colors.white,
                     child: Center(
@@ -50,11 +50,11 @@ class JigsawBoard extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 50,
                               color: lowerCase
-                                  ? vm.user!.jigsawAnswerList
+                                  ? vm.user!.jigsawAnswerList!
                                           .contains(alphabetList[index])
                                       ? Colors.white
                                       : Colors.blue
-                                  : vm.user!.jigsawAnswerList
+                                  : vm.user!.jigsawAnswerList!
                                           .contains(alphabetList[index])
                                       ? Colors.white
                                       : Colors.orange)),
@@ -76,7 +76,7 @@ class JigsawBoard extends StatelessWidget {
                   FittedBox(
                       child: Consumer<JigsawViewModel>(builder: (_, vm, __) {
                     return Text(
-                      '(${Provider.of<ProfileViewModel>(context).currentUser!.name}) 진행도 : ${vm.user!.jigsawAnswerList.isEmpty ? 0 : (vm.user!.jigsawAnswerList.length / alphabetList.length * 100).toInt()}%',
+                      '(${Provider.of<ProfileViewModel>(context).currentUser!.name}) 진행도 : ${vm.user!.jigsawAnswerList!.isEmpty ? 0 : (vm.user!.jigsawAnswerList!.length / alphabetList.length * 100).toInt()}%',
                       textScaleFactor: 4,
                       style: const TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold),

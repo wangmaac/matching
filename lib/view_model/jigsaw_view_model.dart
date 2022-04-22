@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:matching/model/hive_model/user.dart';
-import 'package:matching/view_model/profile_view_model.dart';
-import 'package:provider/provider.dart';
 
 class JigsawViewModel with ChangeNotifier {
   List<bool> answerPieceList = [];
@@ -36,8 +34,8 @@ class JigsawViewModel with ChangeNotifier {
     BuildContext context,
     String s,
   ) {
-    if (!user!.jigsawAnswerList.contains(s)) {
-      user!.jigsawAnswerList.add(s);
+    if (!user!.jigsawAnswerList!.contains(s)) {
+      user!.jigsawAnswerList!.add(s);
       Hive.box<UserModel>('user').put(user!.name, user!);
     }
     notifyListeners();

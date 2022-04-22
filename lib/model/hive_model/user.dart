@@ -11,7 +11,7 @@ class UserModel {
   @HiveField(2)
   final String image;
   @HiveField(3)
-  final List<String> jigsawAnswerList;
+  final List<String>? jigsawAnswerList;
 
   UserModel(
       {required this.name,

@@ -20,7 +20,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       name: fields[0] as String,
       age: fields[1] as int,
       image: fields[2] as String,
-      jigsawAnswerList: (fields[3] as List).cast<String>(),
+      jigsawAnswerList: (fields[3] as List?)?.cast<String>(),
     );
   }
 
