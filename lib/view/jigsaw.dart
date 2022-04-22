@@ -60,7 +60,7 @@ class _JigsawState extends State<Jigsaw> {
 
 //  late List<bool> answerList;
 
-  final AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  final AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
 
   bool readyToStart = false;
 

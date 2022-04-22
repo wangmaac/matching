@@ -44,7 +44,6 @@ class _RegisterState extends State<Register> {
             width: _width / 3,
             child: Column(
               children: [
-                //Image.file(File(_imageFileList![index].path)),
                 GestureDetector(
                   onTap: () => _onImageButtonPressed(ImageSource.gallery,
                       context: context),

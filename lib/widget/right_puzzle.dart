@@ -20,7 +20,7 @@ class _RightPuzzleState extends State<RightPuzzle>
   late double width;
   late AnimationController _controller;
 
-  AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
 
   @override
   void initState() {
