@@ -158,3 +158,4 @@ flutter:
 flutter_native_splash:
   image: lib/images/splash.png
   color: "#F8E3C3"
+  color_dark: "#F8E3C3"
