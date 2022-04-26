@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:matching/model/sentence.dart';
 import 'package:matching/view_model/device_view_model.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +25,10 @@ class _TrainState extends State<Train> {
   @override
   void initState() {
     _resultList = getSentence(widget.sentence);
-    initialGlobalKey();
-
-    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
-      initialGKOffset();
-      print(gkOffsetList.toString());
-      print(gkSizeList.toString());
-    });
-
+    _resultList.shuffle();
+    _resultList = [..._resultList];
+    print(_resultList);
+    //initialGlobalKey();
     super.initState();
   }
 
@@ -57,6 +52,7 @@ class _TrainState extends State<Train> {
                 children: List.generate(
                     _resultList.length,
                     (index) => Draggable(
+                          data: _resultList[index].toString(),
                           feedback: Material(
                               color: Colors.transparent,
                               child: Center(
@@ -93,21 +89,34 @@ class _TrainState extends State<Train> {
                             children: [
                               const SizedBox(width: 100),
                               Image.asset('lib/images/sentence/head.png'),
-                              Image.asset('lib/images/sentence/$index.png',
-                                  key: gk[index]),
+                              DragTarget(
+                                builder: (context, okList, rejectList) {
+                                  return Image.asset(
+                                    'lib/images/sentence/$index.png',
+                                  );
+                                },
+                                onAccept: (data) {
+                                  print(data);
+                                },
+                                onWillAccept: (data) {
+                                  return true;
+                                },
+                              ),
                             ],
                           );
                         } else if (index == _resultList.length - 1) {
                           return Row(
                             children: [
-                              Image.asset('lib/images/sentence/$index.png',
-                                  key: gk[index]),
+                              Image.asset(
+                                'lib/images/sentence/$index.png',
+                              ),
                               Image.asset('lib/images/sentence/tail.png'),
                             ],
                           );
                         } else {
-                          return Image.asset('lib/images/sentence/$index.png',
-                              key: gk[index]);
+                          return Image.asset(
+                            'lib/images/sentence/$index.png',
+                          );
                         }
                       }),
                     ),
