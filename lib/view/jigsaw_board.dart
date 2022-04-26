@@ -66,7 +66,8 @@ class JigsawBoard extends StatelessWidget {
               itemCount: alphabetList.length,
             )),
             Container(
-              height: Provider.of<DeviceViewModel>(context).deviceKind == 'pad'
+              height: Provider.of<DeviceViewModel>(context).deviceKind ==
+                      DeviceKind.Pad
                   ? 100
                   : 50,
               color: Colors.indigoAccent,

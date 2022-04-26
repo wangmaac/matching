@@ -76,6 +76,7 @@ flutter:
     - lib/images/
     - lib/images/matching/
     - lib/images/jigsaw/
+    - lib/images/sentence/
     - lib/images/jigsaw/la/
     - lib/images/jigsaw/lb/
     - lib/images/jigsaw/lc/

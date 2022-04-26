@@ -9,6 +9,8 @@ import '../view/error.dart';
 import '../view/login.dart';
 import '../view/matching.dart';
 import '../view/menu.dart';
+import '../view/train.dart';
+import '../view/train_board.dart';
 
 class MyRouter {
   final ProfileViewModel loginState;
@@ -47,6 +49,26 @@ class MyRouter {
                     child: const Matching(),
                   ),
                 ),
+                GoRoute(
+                    name: 'trainBoard',
+                    path: 'trainBoard',
+                    pageBuilder: (context, state) => MaterialPage<void>(
+                          key: state.pageKey,
+                          child: const TrainBoard(),
+                        ),
+                    routes: [
+                      GoRoute(
+                          name: 'train',
+                          path: ':sentence',
+                          pageBuilder: (context, state) {
+                            final String sentence =
+                                state.params['sentence'].toString();
+                            return MaterialPage<void>(
+                              key: state.pageKey,
+                              child: Train(sentence: sentence),
+                            );
+                          }),
+                    ]),
                 GoRoute(
                     name: 'jigsawBoard',
                     path: 'jigsawBoard',

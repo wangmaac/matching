@@ -16,6 +16,8 @@ class Menu extends StatelessWidget {
           navUrl: 'matching', imageUrl: 'lib/images/puzzle_button.png'),
       MenuButtonModel(
           navUrl: 'jigsawBoard', imageUrl: 'lib/images/jigsaw_button.png'),
+      MenuButtonModel(
+          navUrl: 'trainBoard', imageUrl: 'lib/images/sentence_button.png'),
     ];
 
     return Scaffold(
