@@ -1,15 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:lottie/lottie.dart';
-import 'package:matching/model/sentence.dart';
 import 'package:matching/view_model/device_view_model.dart';
 import 'package:provider/provider.dart';
 
-import '../utils/constants.dart';
 import '../widget/finish.dart';
 
 enum Progress { ING, WRONG, SUCCESS }
