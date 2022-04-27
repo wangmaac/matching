@@ -55,7 +55,9 @@ List<String> alphabetList = [
   'z'
 ];
 
+//max length : 4
 List<SentenceModel> sentenceList = [
   SentenceModel('I go home', ['I', 'go', 'home']),
   SentenceModel('you go home', ['You', 'go', 'home']),
+  SentenceModel('you go your home', ['You', 'go', 'your', 'home']),
 ];
