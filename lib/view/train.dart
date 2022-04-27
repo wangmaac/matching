@@ -1,13 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:lottie/lottie.dart';
 import 'package:matching/model/sentence.dart';
 import 'package:matching/view_model/device_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/constants.dart';
+import '../widget/finish.dart';
+
+enum Progress { ING, WRONG, SUCCESS }
 
 class Train extends StatefulWidget {
   final String sentence;
@@ -17,7 +22,7 @@ class Train extends StatefulWidget {
   State<Train> createState() => _TrainState();
 }
 
-class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
+class _TrainState extends State<Train> with TickerProviderStateMixin {
   late double _deviceWidth;
   late double _deviceHeight;
   late List<String> _resultList;
@@ -28,36 +33,43 @@ class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
   List<Offset> gkOffsetList = [];
   List<Size> gkSizeList = [];
 
-  List<int> completeList = [];
+  Progress status = Progress.ING;
+
+  late List<String> userAnswerList;
 
   late double pieceSize;
 
   late AnimationController animationController;
+  late AnimationController lottieController;
 
   @override
   void initState() {
     _resultList = getSentence(widget.sentence);
+    userAnswerList = List.filled(_resultList.length, '');
     originalList = [..._resultList];
     _resultList.shuffle();
 
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3500),
+      duration: const Duration(milliseconds: 2500),
+    );
+    lottieController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
     );
 
     for (int i = 0; i < originalList.length; i++) {
       _resultIndexList.add(originalList.indexOf(_resultList[i]));
     }
     initialGlobalKey();
-    /*    WidgetsBinding.instance!.addPostFrameCallback((_) {
-        print('abc');
-        //initialGKOffset();
-      });*/
-    /*    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
-        print(timeStamp.toString());
-        initialGKOffset();
-      });*/
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    lottieController.dispose();
+    super.dispose();
   }
 
   @override
@@ -77,168 +89,212 @@ class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-      child: Column(
+      child: Stack(
         children: [
-          Expanded(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-                _resultList.length,
-                (index) => Draggable(
-                    data: _resultIndexList[index],
-                    feedback: Material(
-                        color: Colors.transparent,
-                        child: Center(
-                            child: Text(
-                          _resultList[index].toString(),
-                          style: TextStyle(fontSize: _deviceWidth * 0.05),
-                        ))),
-                    childWhenDragging: const SizedBox(),
-                    child: completeList.contains(_resultIndexList[index])
-                        ? emptyBox()
-                        : Container(
-                            height: _deviceHeight / 6,
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+          Column(
+            children: [
+              Expanded(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                    _resultList.length,
+                    (index) => Draggable(
+                        data: _resultIndexList[index],
+                        feedback: Material(
+                            color: Colors.transparent,
                             child: Center(
                                 child: Text(
-                              _resultList[index],
+                              _resultList[index].toString(),
                               style: TextStyle(fontSize: _deviceWidth * 0.05),
-                            )),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 0.5, color: Colors.indigoAccent),
-                              color: Colors.yellowAccent,
+                            ))),
+                        childWhenDragging: const SizedBox(),
+                        child: userAnswerList.contains(_resultList[index])
+                            ? emptyBox()
+                            : Container(
+                                height: _deviceHeight / 6,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Center(
+                                    child: Text(
+                                  _resultList[index],
+                                  style: TextStyle(
+                                      fontSize: _deviceWidth * 0.05,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 0.5, color: Colors.indigoAccent),
+                                  color: Colors.yellowAccent,
+                                ),
+                              ))),
+              )),
+              Expanded(
+                child: AnimatedBuilder(
+                    animation: animationController,
+                    builder: (context, snapshot) {
+                      return Transform.translate(
+                        offset: Offset(
+                            -_deviceWidth * animationController.value, 0),
+                        child: SizedBox(
+                          width: _deviceWidth,
+                          child: FittedBox(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:
+                                  List.generate(_resultList.length, (index) {
+                                if (index == 0) {
+                                  return Row(
+                                    children: [
+                                      const SizedBox(width: 200),
+                                      SizedBox(
+                                        width: pieceSize,
+                                        height: pieceSize,
+                                        child: Image.asset(
+                                          'lib/images/sentence/head.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      targetWidget(index),
+                                    ],
+                                  );
+                                } else if (index == _resultList.length - 1) {
+                                  return Row(
+                                    children: [
+                                      targetWidget(index),
+                                      SizedBox(
+                                        width: pieceSize,
+                                        height: pieceSize,
+                                        child: Image.asset(
+                                          'lib/images/sentence/tail.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  if (index == 2) {
+                                    return targetWidget(index);
+                                  } else {
+                                    return targetWidget(index);
+                                  }
+                                }
+                              }),
                             ),
-                          ))),
-          )),
-          Expanded(
-            child: AnimatedBuilder(
-                animation: animationController,
-                builder: (context, snapshot) {
-                  print(animationController.value);
-                  return Transform.translate(
-                    offset:
-                        Offset(-_deviceWidth * animationController.value, 0),
-                    child: SizedBox(
-                      width: _deviceWidth,
-                      child: FittedBox(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(_resultList.length, (index) {
-                            if (index == 0) {
-                              return Row(
-                                children: [
-                                  const SizedBox(width: 200),
-                                  SizedBox(
-                                    width: pieceSize,
-                                    height: pieceSize,
-                                    child: Image.asset(
-                                      'lib/images/sentence/head.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                  targetWidget(index),
-                                ],
-                              );
-                            } else if (index == _resultList.length - 1) {
-                              return Row(
-                                children: [
-                                  targetWidget(index),
-                                  SizedBox(
-                                    width: pieceSize,
-                                    height: pieceSize,
-                                    child: Image.asset(
-                                      'lib/images/sentence/tail.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            } else {
-                              if (index == 2) {
-                                return targetWidget(index);
-                              } else {
-                                return targetWidget(index);
-                              }
-                            }
-                          }),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                }),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
-                        visualDensity: VisualDensity.adaptivePlatformDensity),
-                    onPressed: () {
-                      setState(() {
-                        completeList.clear();
-                        animationController.reset();
-                      });
-                    },
-                    child: SizedBox(
-                        child: Center(
-                            child: Text(
-                          'reset',
-                          style: TextStyle(
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.02,
-                              fontWeight: FontWeight.bold),
-                        )),
-                        height:
-                            Provider.of<DeviceViewModel>(context).deviceKind ==
+                      );
+                    }),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.red),
+                            visualDensity:
+                                VisualDensity.adaptivePlatformDensity),
+                        onPressed: () {
+                          setState(() {
+                            resetFunction();
+                          });
+                        },
+                        child: SizedBox(
+                            child: Center(
+                                child: Text(
+                              'reset',
+                              style: TextStyle(
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.02,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                            height: Provider.of<DeviceViewModel>(context)
+                                        .deviceKind ==
                                     DeviceKind.Pad
                                 ? 80
                                 : 50),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.blue),
-                        visualDensity: VisualDensity.adaptivePlatformDensity),
-                    onPressed: () {
-                      print('click');
-                      animationController.forward();
-                    },
-                    child: SizedBox(
-                      child: Center(
-                          child: Text(
-                        'submit',
-                        style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.02,
-                            fontWeight: FontWeight.bold),
-                      )),
-                      height:
-                          Provider.of<DeviceViewModel>(context).deviceKind ==
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.blue),
+                            visualDensity:
+                                VisualDensity.adaptivePlatformDensity),
+                        onPressed: () {
+                          if (listEquals(userAnswerList, originalList)) {
+                            animationController.forward().then((value) {
+                              setState(() {
+                                status = Progress.SUCCESS;
+                              });
+                            });
+                          } else {
+                            setState(() {
+                              status = Progress.WRONG;
+                            });
+                          }
+                        },
+                        child: SizedBox(
+                          child: Center(
+                              child: Text(
+                            'submit',
+                            style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.02,
+                                fontWeight: FontWeight.bold),
+                          )),
+                          height: Provider.of<DeviceViewModel>(context)
+                                      .deviceKind ==
                                   DeviceKind.Pad
                               ? 80
                               : 50,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          )
+              )
+            ],
+          ),
+          status == Progress.WRONG
+              ? Builder(builder: (context) {
+                  Future.delayed(const Duration(milliseconds: 1000), () {
+                    lottieController.forward().then((value) {
+                      setState(() {
+                        resetFunction();
+                      });
+                    });
+                  });
+                  return Container(
+                      width: _deviceWidth,
+                      height: _deviceHeight,
+                      color: Colors.white60,
+                      child: Lottie.asset(
+                        'lib/images/sentence/bomb.json',
+                        fit: BoxFit.fill,
+                        controller: lottieController,
+                      )
+                      /*Lottie.network(
+                      'https://assets6.lottiefiles.com/private_files/lf30_ogrm1vj2.json',
+                      fit: BoxFit.fill,
+                      controller: lottieController,
+                    ),*/
+                      );
+                })
+              : status == Progress.SUCCESS
+                  ? const FinishWidget(vm: true)
+                  : emptyBox()
         ],
       ),
     ));
   }
 
   List<String> getSentence(String sentence) {
-    List<SentenceModel> result =
-        sentenceList.where((model) => model.id == sentence.trim()).toList();
-    return result.first.sentence;
+    return sentence.split('  ');
   }
 
   void initialGlobalKey() {
@@ -255,7 +311,6 @@ class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
       Offset position = box.localToGlobal(Offset.zero);
       gkOffsetList.add(position);
       gkSizeList.add(box.size);
-      print(box.size);
     }
   }
 
@@ -272,7 +327,7 @@ class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
                 fit: BoxFit.contain,
               ),
             ),
-            completeList.contains(index)
+            userAnswerList[index] != ''
                 ? SizedBox(
                     width: pieceSize,
                     height: pieceSize,
@@ -280,23 +335,19 @@ class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
                         child: Padding(
                       padding: const EdgeInsets.all(14.0),
                       child: Text(
-                        originalList[index],
+                        userAnswerList[index],
                         style: TextStyle(fontSize: pieceSize * 0.15),
                       ),
                     )),
                   )
-                : Text('')
+                : emptyBox()
           ],
         );
       },
       onAccept: (data) {
-        if (data == index) {
-          if (!completeList.contains(index)) {
-            setState(() {
-              completeList.add(index);
-            });
-          }
-        }
+        setState(() {
+          userAnswerList[index] = originalList[data as int];
+        });
       },
       onWillAccept: (data) {
         return true;
@@ -306,5 +357,12 @@ class _TrainState extends State<Train> with SingleTickerProviderStateMixin {
 
   Widget emptyBox() {
     return const SizedBox();
+  }
+
+  void resetFunction() {
+    userAnswerList = List.filled(_resultList.length, '');
+    animationController.reset();
+    lottieController.reset();
+    status = Progress.ING;
   }
 }

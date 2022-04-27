@@ -57,7 +57,9 @@ List<String> alphabetList = [
 
 //max length : 4
 List<SentenceModel> sentenceList = [
-  SentenceModel('I go home', ['I', 'go', 'home']),
-  SentenceModel('you go home', ['You', 'go', 'home']),
-  SentenceModel('you go your home', ['You', 'go', 'your', 'home']),
+  SentenceModel.split('I  go  home'),
+  SentenceModel.split('you  go  home'),
+  SentenceModel.split('Show me  the money'),
+  SentenceModel.split('Show  me  the  money'),
+  SentenceModel.split('I was  late for  the train'),
 ];
