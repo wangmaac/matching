@@ -63,7 +63,7 @@ class _RightPuzzleState extends State<RightPuzzle>
             builder: (context, widget) {
               return Transform.translate(
                 child: rightPuzzleButton(value),
-                offset: Offset(sin(pi * animation.value * 2 * 5), 0),
+                offset: Offset(10 * sin(pi * animation.value * 2 * 5), 0),
               );
             }),
         onWillAccept: (data) {
