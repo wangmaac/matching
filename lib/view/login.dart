@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:matching/view_model/profile_view_model.dart';
+import 'package:matching/widget/profile_empty.dart';
 import 'package:provider/provider.dart';
 
 import '../model/hive_model/user.dart';
@@ -45,18 +46,6 @@ class Login extends StatelessWidget {
                           const SizedBox(
                             width: 30,
                           ),
-                          GestureDetector(
-                            child: Icon(
-                              Icons.add_circle,
-                              size: MediaQuery.of(context).size.width * 0.05,
-                            ),
-                            onTap: () {
-                              Provider.of<ProfileViewModel>(context,
-                                      listen: false)
-                                  .setLongPress(false);
-                              context.push('/register');
-                            },
-                          )
                         ],
                       ),
                     ),
@@ -66,21 +55,42 @@ class Login extends StatelessWidget {
                           valueListenable:
                               Hive.box<UserModel>('user').listenable(),
                           builder: (context, Box<UserModel> box, child) {
-                            return ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15.0),
-                                  child: AspectRatio(
-                                    aspectRatio: 9 / 12,
-                                    child:
-                                        Profile(selectUser: box.getAt(index)!),
-                                  ),
-                                );
-                              },
-                              itemCount: box.length,
-                            );
+                            if (box.isEmpty) {
+                              return const ProfileEmpty();
+                            } else {
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  if (index == box.length - 1) {
+                                    return Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15.0),
+                                          child: AspectRatio(
+                                            aspectRatio: 9 / 12,
+                                            child: Profile(
+                                                selectUser: box.getAt(index)!),
+                                          ),
+                                        ),
+                                        const ProfileEmpty()
+                                      ],
+                                    );
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15.0),
+                                      child: AspectRatio(
+                                        aspectRatio: 9 / 12,
+                                        child: Profile(
+                                            selectUser: box.getAt(index)!),
+                                      ),
+                                    );
+                                  }
+                                },
+                                itemCount: box.length,
+                              );
+                            }
                           }),
                     ),
                   ],

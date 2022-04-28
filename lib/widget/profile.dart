@@ -99,8 +99,8 @@ class Profile extends StatelessWidget {
         alignment: Alignment.topLeft,
         child: Icon(
           Icons.cancel,
-          color: Colors.red,
-          size: 40,
+          color: Colors.indigo,
+          size: 60,
         ),
       ),
     );

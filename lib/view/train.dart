@@ -30,6 +30,8 @@ class _TrainState extends State<Train> with TickerProviderStateMixin {
 
   Progress status = Progress.ING;
 
+  bool show = true;
+
   late List<String> userAnswerList;
 
   late double pieceSize;
@@ -130,50 +132,53 @@ class _TrainState extends State<Train> with TickerProviderStateMixin {
                       return Transform.translate(
                         offset: Offset(
                             -_deviceWidth * animationController.value, 0),
-                        child: SizedBox(
-                          width: _deviceWidth,
-                          child: FittedBox(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children:
-                                  List.generate(_resultList.length, (index) {
-                                if (index == 0) {
-                                  return Row(
-                                    children: [
-                                      const SizedBox(width: 200),
-                                      SizedBox(
-                                        width: pieceSize,
-                                        height: pieceSize,
-                                        child: Image.asset(
-                                          'lib/images/sentence/head.png',
-                                          fit: BoxFit.contain,
+                        child: Visibility(
+                          visible: show,
+                          child: SizedBox(
+                            width: _deviceWidth,
+                            child: FittedBox(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children:
+                                    List.generate(_resultList.length, (index) {
+                                  if (index == 0) {
+                                    return Row(
+                                      children: [
+                                        const SizedBox(width: 200),
+                                        SizedBox(
+                                          width: pieceSize,
+                                          height: pieceSize,
+                                          child: Image.asset(
+                                            'lib/images/sentence/head.png',
+                                            fit: BoxFit.contain,
+                                          ),
                                         ),
-                                      ),
-                                      targetWidget(index),
-                                    ],
-                                  );
-                                } else if (index == _resultList.length - 1) {
-                                  return Row(
-                                    children: [
-                                      targetWidget(index),
-                                      SizedBox(
-                                        width: pieceSize,
-                                        height: pieceSize,
-                                        child: Image.asset(
-                                          'lib/images/sentence/tail.png',
-                                          fit: BoxFit.contain,
+                                        targetWidget(index),
+                                      ],
+                                    );
+                                  } else if (index == _resultList.length - 1) {
+                                    return Row(
+                                      children: [
+                                        targetWidget(index),
+                                        SizedBox(
+                                          width: pieceSize,
+                                          height: pieceSize,
+                                          child: Image.asset(
+                                            'lib/images/sentence/tail.png',
+                                            fit: BoxFit.contain,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  if (index == 2) {
-                                    return targetWidget(index);
+                                      ],
+                                    );
                                   } else {
-                                    return targetWidget(index);
+                                    if (index == 2) {
+                                      return targetWidget(index);
+                                    } else {
+                                      return targetWidget(index);
+                                    }
                                   }
-                                }
-                              }),
+                                }),
+                              ),
                             ),
                           ),
                         ),
@@ -225,6 +230,7 @@ class _TrainState extends State<Train> with TickerProviderStateMixin {
                             animationController.forward().then((value) {
                               setState(() {
                                 status = Progress.SUCCESS;
+                                show = false;
                               });
                             });
                           } else {
