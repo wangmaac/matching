@@ -59,6 +59,8 @@ class _TrainState extends State<Train> with TickerProviderStateMixin {
       _resultIndexList.add(originalList.indexOf(_resultList[i]));
     }
     initialGlobalKey();
+
+    animationController.addStatusListener(_updateStatus);
     super.initState();
   }
 
@@ -66,6 +68,7 @@ class _TrainState extends State<Train> with TickerProviderStateMixin {
   void dispose() {
     animationController.dispose();
     lottieController.dispose();
+    animationController.removeStatusListener(_updateStatus);
     super.dispose();
   }
 
@@ -365,5 +368,11 @@ class _TrainState extends State<Train> with TickerProviderStateMixin {
     animationController.reset();
     lottieController.reset();
     status = Progress.ING;
+  }
+
+  void _updateStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      animationController.reset();
+    }
   }
 }

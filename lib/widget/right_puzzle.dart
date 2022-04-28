@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -15,26 +17,40 @@ class RightPuzzle extends StatefulWidget {
 }
 
 class _RightPuzzleState extends State<RightPuzzle>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late String value;
   late double width;
   late AnimationController _controller;
-
+  late AnimationController _wrongContoller;
+  late Animation animation;
   AudioPlayer advancedPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
 
   @override
   void initState() {
     value = widget.value;
     width = widget.width;
-
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _wrongContoller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1000));
+
+    animation = Tween(begin: 0.0, end: 1.0).animate(_wrongContoller);
+
+    _wrongContoller.addStatusListener(_updateChecker);
     super.initState();
+  }
+
+  void _updateChecker(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _wrongContoller.reset();
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _wrongContoller.dispose();
+    _wrongContoller.removeStatusListener(_updateChecker);
     super.dispose();
   }
 
@@ -42,10 +58,21 @@ class _RightPuzzleState extends State<RightPuzzle>
   Widget build(BuildContext context) {
     return Expanded(
       child: DragTarget(
-        builder: (context, okData, rejectData) => rightPuzzleButton(value),
+        builder: (context, okData, rejectData) => AnimatedBuilder(
+            animation: animation,
+            builder: (context, widget) {
+              return Transform.translate(
+                child: rightPuzzleButton(value),
+                offset: Offset(sin(pi * animation.value * 2 * 5), 0),
+              );
+            }),
         onWillAccept: (data) {
-          if (data == value) return true;
-          return false;
+          if (data == value) {
+            return true;
+          } else {
+            _wrongContoller.forward();
+            return false;
+          }
         },
         onAccept: (data) async {
           Provider.of<MatchingViewModel>(context, listen: false)
