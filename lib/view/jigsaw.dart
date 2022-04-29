@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,26 +9,31 @@ import 'package:flutter/scheduler.dart';
 import 'package:matching/view_model/jigsaw_view_model.dart';
 import 'package:matching/view_model/profile_view_model.dart';
 import 'package:provider/provider.dart';
+
 import '../model/hive_model/user.dart';
 import '../widget/finish.dart';
 
 class Jigsaw extends StatefulWidget {
   final String id;
+
   const Jigsaw({Key? key, required this.id}) : super(key: key);
 
   @override
   State<Jigsaw> createState() => _JigsawState();
 }
 
-class _JigsawState extends State<Jigsaw> {
+class _JigsawState extends State<Jigsaw> with SingleTickerProviderStateMixin {
   late String presentString;
   late String presentValue;
+
+  late AnimationController _controller;
 
   //todo : KEY of Guide Grid Size & Position
   List<GlobalKey> keyList = [];
   final GlobalKey leftKey = GlobalKey();
 
   late Size leftSize;
+
   //todo : Guide Grid Size & Position
   List<Offset> offsetOfKeyList = [];
   List<Size> sizeOfKeyList = [];
@@ -66,6 +72,7 @@ class _JigsawState extends State<Jigsaw> {
 
   late Timer _timer;
   int second = 3;
+  final shakingCount = 2;
 
   String upperLowerChecker(String value) {
     if (value.substring(0, 1) == 'u') {
@@ -77,7 +84,7 @@ class _JigsawState extends State<Jigsaw> {
 
   @override
   void initState() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
       setState(() {
         second--;
       });
@@ -105,11 +112,15 @@ class _JigsawState extends State<Jigsaw> {
         readyToStart = true;
       });
     });
+
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
     super.initState();
   }
 
   @override
   void dispose() {
+    _controller.dispose();
     _timer.cancel();
     super.dispose();
   }
@@ -141,6 +152,7 @@ class _JigsawState extends State<Jigsaw> {
                   flex: 1,
                   child: Stack(
                     children: [
+                      //todo guide grid
                       Center(
                         child: GridView.count(
                             crossAxisCount: 3,
@@ -155,29 +167,44 @@ class _JigsawState extends State<Jigsaw> {
                                     index,
                                     DragTarget(
                                       builder: (context, okList, rejectList) {
-                                        return Container(
-                                          key: keyList[index],
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                            width: 1,
-                                            color: Colors.grey.shade500,
-                                          )),
-                                        );
+                                        return AnimatedBuilder(
+                                            animation: _controller,
+                                            builder: (context, widget) {
+                                              return Transform.translate(
+                                                offset: Offset(
+                                                    20 *
+                                                        sin(pi *
+                                                            2 *
+                                                            _controller.value *
+                                                            shakingCount),
+                                                    0),
+                                                child: Container(
+                                                  key: keyList[index],
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                    width: 1,
+                                                    color: Colors.grey.shade500,
+                                                  )),
+                                                ),
+                                              );
+                                            });
                                       },
                                       onWillAccept: (data) {
-                                        if (index == data) {
-                                          return true;
-                                        }
-                                        return false;
+                                        return true;
                                       },
                                       onAccept: (int data) {
-                                        advancedPlayer.play(
-                                            'https://ssl.gstatic.com/dictionary/static/sounds/oxford/correct--_gb_1.mp3',
-                                            volume: 5.0);
-                                        Provider.of<JigsawViewModel>(context,
-                                                listen: false)
-                                            .updatePiece(
-                                                context, index, presentValue);
+                                        if (data == index) {
+                                          advancedPlayer.play(
+                                              'https://ssl.gstatic.com/dictionary/static/sounds/oxford/correct--_gb_1.mp3',
+                                              volume: 5.0);
+                                          Provider.of<JigsawViewModel>(context,
+                                                  listen: false)
+                                              .updatePiece(
+                                                  context, index, presentValue);
+                                        } else {
+                                          _controller.forward().then(
+                                              (value) => _controller.reset());
+                                        }
                                       },
                                     )))
                                 .values
@@ -186,42 +213,65 @@ class _JigsawState extends State<Jigsaw> {
                       IgnorePointer(
                         ignoring: true,
                         //real image
-                        child: Stack(
-                          children: Provider.of<JigsawViewModel>(context)
-                              .answerPieceList
-                              .asMap()
-                              .map((index, value) => MapEntry(
-                                  index,
-                                  initComplete
-                                      ? Positioned(
-                                          top: offsetOfKeyList[index].dy +
-                                              stackImageAddPositionList[index]
-                                                  .dy,
-                                          left: offsetOfKeyList[index].dx -
-                                              offsetOfKeyList.first.dx +
-                                              horizontalGridPadding +
-                                              stackImageAddPositionList[index]
-                                                  .dx,
-                                          child: Container(
-                                            width: stackImageCalSizeList[index]
-                                                .width,
-                                            height: stackImageCalSizeList[index]
-                                                .height,
-                                            child: Visibility(
-                                              visible: value,
-                                              child: Image.asset(
-                                                'lib/images/jigsaw/$presentString/r$presentString-${index + 1}.png',
-                                                fit: BoxFit.fitWidth,
-                                              ),
-                                            ),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.transparent,
-                                            ),
-                                          ))
-                                      : const SizedBox()))
-                              .values
-                              .toList(),
-                        ),
+                        child: AnimatedBuilder(
+                            animation: _controller,
+                            builder: (context, widget) {
+                              return Transform.translate(
+                                offset: Offset(
+                                    20 *
+                                        sin(pi *
+                                            2 *
+                                            _controller.value *
+                                            shakingCount),
+                                    0),
+                                child: Stack(
+                                  children: Provider.of<JigsawViewModel>(
+                                          context)
+                                      .answerPieceList
+                                      .asMap()
+                                      .map((index, value) => MapEntry(
+                                          index,
+                                          initComplete
+                                              ? Positioned(
+                                                  top: offsetOfKeyList[index]
+                                                          .dy +
+                                                      stackImageAddPositionList[
+                                                              index]
+                                                          .dy,
+                                                  left: offsetOfKeyList[index]
+                                                          .dx -
+                                                      offsetOfKeyList.first.dx +
+                                                      horizontalGridPadding +
+                                                      stackImageAddPositionList[
+                                                              index]
+                                                          .dx,
+                                                  child: Container(
+                                                    width:
+                                                        stackImageCalSizeList[
+                                                                index]
+                                                            .width,
+                                                    height:
+                                                        stackImageCalSizeList[
+                                                                index]
+                                                            .height,
+                                                    child: Visibility(
+                                                      visible: value,
+                                                      child: Image.asset(
+                                                        'lib/images/jigsaw/$presentString/r$presentString-${index + 1}.png',
+                                                        fit: BoxFit.fitWidth,
+                                                      ),
+                                                    ),
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: Colors.transparent,
+                                                    ),
+                                                  ))
+                                              : const SizedBox()))
+                                      .values
+                                      .toList(),
+                                ),
+                              );
+                            }),
                       )
                     ],
                   ))
