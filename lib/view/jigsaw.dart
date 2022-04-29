@@ -307,7 +307,8 @@ class _JigsawState extends State<Jigsaw> with SingleTickerProviderStateMixin {
                     '$second',
                     style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.2,
-                        color: Colors.blue),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               )
